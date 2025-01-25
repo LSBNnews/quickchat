@@ -61,7 +61,7 @@
         android:id="@+id/signUpButton"
         android:layout_width="225dp"
         android:layout_height="54dp"
-        android:background="@drawable/stroke_button"
+        android:background="@drawable/purple_stroke_button"
         android:text="Đăng ký"
         android:textColor="#9900ff"
         android:textStyle="bold"

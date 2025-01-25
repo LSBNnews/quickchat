@@ -70,11 +70,11 @@
         android:padding="12dp"
         android:background="@drawable/type_box"
         android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="14dp" />
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="225dp"
+        android:layout_width="250dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="Đăng ký"
@@ -83,7 +83,9 @@
         android:textStyle="bold"
         android:background="@drawable/purple_button"
         android:textColor="@color/white"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="10dp"
+        android:elevation="20dp"
+        android:translationZ="4dp"/>
 
     <TextView
         android:layout_width="wrap_content"
