@@ -2,12 +2,16 @@ package com.example.quickchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -32,16 +36,38 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Sự kiện khi người dùng nhấn nút đăng ký
         signup_button.setOnClickListener(v -> {
+
             String username = signup_username.getText().toString().trim();
             String password = signup_password.getText().toString().trim();
             String confirmPassword = signup_confirmPassword.getText().toString().trim();
             String email = signup_email.getText().toString().trim();
 
-            if(username.isEmpty()) signup_username.setError("Không để trống tên người dùng");
-            if (password.isEmpty()) signup_password.setError("Không để trống mật khẩu");
-            if (confirmPassword.isEmpty()) signup_confirmPassword.setError("Không để trống xác nhận mật khẩu");
-            if (!confirmPassword.equals(password)) signup_confirmPassword.setError("Mật khẩu không khớp");
-            if (email.isEmpty()) signup_email.setError("Không để trống email");
+
+
+            if(TextUtils.isEmpty(username)) {
+                signup_username.setError("Không để trống tên người dùng");
+                signup_username.requestFocus();
+                return;
+            }
+            if (TextUtils.isEmpty(password)) {
+                signup_password.setError("Không để trống mật khẩu");
+                signup_password.requestFocus();
+                return;
+            }
+            if (TextUtils.isEmpty(confirmPassword)) {
+                signup_confirmPassword.setError("Không để trống xác nhận mật khẩu");
+                signup_confirmPassword.requestFocus();
+                return;
+            }
+            if (!confirmPassword.equals(password)) {
+                signup_confirmPassword.setError("Mật khẩu không khớp");
+                signup_confirmPassword.requestFocus();
+                return;
+            }
+            if (TextUtils.isEmpty(email)) {
+                signup_email.setError("Không để trống email");
+                signup_email.requestFocus();
+            }
             else {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

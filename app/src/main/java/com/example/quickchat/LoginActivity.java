@@ -2,6 +2,7 @@ package com.example.quickchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,11 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText login_email, login_password;
-    GoogleSignInClient
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +35,22 @@ public class LoginActivity extends AppCompatActivity {
         login_button.setOnClickListener(v -> {
             String email = login_email.getText().toString().trim();
             String password = login_password.getText().toString().trim();
+            if(TextUtils.isEmpty(email)) {
+                login_email.setError("Không để trống email");
+                login_email.requestFocus();
+                return;
+            }
+            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                login_email.setError("Vui lòng điền email hợp lệ");
+                login_email.requestFocus();
+                return;
+            }
+
+            if(TextUtils.isEmpty(password)) {
+                login_password.setError("Không để trống mật khẩu");
+                login_password.requestFocus();
+                return;
+            }
 
             if(!email.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 if (!password.isEmpty()) {
@@ -41,7 +59,15 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
                                 finish();
-                            }).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show());
+                            }).addOnFailureListener(e -> {
+                                if (e instanceof FirebaseAuthInvalidUserException) {
+                                    Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                                }
+
+                            });
+
                 } else {
                     login_password.setError("Không để trống mật khẩu");
                 }
