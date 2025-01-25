@@ -27,7 +27,7 @@
         android:paddingBottom="10dp" />
 
     <EditText
-        android:id="@+id/signup_username"
+        android:id="@+id/su_username"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         />
 
     <EditText
-        android:id="@+id/signup_password"
+        android:id="@+id/su_password"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
         android:layout_marginBottom="12dp" />
 
     <EditText
-        android:id="@+id/signup_confirm"
+        android:id="@+id/su_confirm"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         android:layout_marginBottom="12dp" />
 
     <EditText
-        android:id="@+id/signup_email"
+        android:id="@+id/su_email"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
         android:layout_marginBottom="14dp" />
 
     <Button
-        android:id="@+id/signupButton"
+        android:id="@+id/su_button"
         android:layout_width="250dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
         android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/loginRedirectText"
+        android:id="@+id/su_loginRedirect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Đăng nhập ngay"
