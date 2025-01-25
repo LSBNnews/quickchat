@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(AuthResult authResult) {
                                         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, HomeScreen.class));
+                                        startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
                                         finish();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -75,14 +75,15 @@ public class LoginActivity extends AppCompatActivity {
         login_forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "Tinh năng đang phát triển", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(LoginActivity.this, "Tinh năng đang phát triển", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, ForgotPasswordActitivy.class));
             }
         });
 
         login_google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, HomeScreen.class));
+                startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
             }
         });
     }

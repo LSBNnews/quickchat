@@ -11,7 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quickchat">
         <activity
-            android:name=".HomeScreen"
+            android:name=".ForgotPasswordActitivy"
+            android:exported="false" />
+        <activity
+            android:name=".HomeScreenActivity"
             android:exported="false"
             android:label="@string/title_activity_home_screen"
             android:theme="@style/Theme.Quickchat.NoActionBar" />
@@ -26,6 +29,7 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
+
     </application>
 
 </manifest>

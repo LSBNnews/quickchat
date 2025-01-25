@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.example.quickchat.databinding.ActivityHomeScreenBinding;
 
-public class HomeScreen extends AppCompatActivity {
+public class HomeScreenActivity extends AppCompatActivity {
 
     private ActivityHomeScreenBinding binding;
 
