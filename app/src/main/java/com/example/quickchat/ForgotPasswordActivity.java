@@ -10,37 +10,58 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 public class ForgotPasswordActivity extends AppCompatActivity {
     private FirebaseAuth auth;
-    private  EditText forgotPassword_email;
+    private EditText forgotPassword_email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
+
+        // Liên kết các view
         forgotPassword_email = findViewById(R.id.fpEmail);
         auth = FirebaseAuth.getInstance();
         Button forgotPassword_back = findViewById(R.id.fpBack);
         Button forgotPassword_confirm = findViewById(R.id.fpConfirm);
 
+        // Xử lý khi nhấn nút "Xác nhận"
         forgotPassword_confirm.setOnClickListener(v -> {
             String userEmail = forgotPassword_email.getText().toString().trim();
-            if(userEmail.isEmpty()) forgotPassword_email.setError("Không được để trống email");
 
-            if(TextUtils.isEmpty(userEmail) && !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
-                Toast.makeText(ForgotPasswordActivity.this, "Nhập email bạn đã đăng kí", Toast.LENGTH_SHORT).show();
+            // Kiểm tra email có rỗng không
+            if (TextUtils.isEmpty(userEmail)) {
+                forgotPassword_email.setError("Không được để trống email");
+                forgotPassword_email.requestFocus();
                 return;
             }
-            auth.sendPasswordResetEmail(userEmail).addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    Toast.makeText(ForgotPasswordActivity.this, "Vui lòng kiểm tra email của bạn !", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ForgotPasswordActivity.this, "Thao tác thất bại !", Toast.LENGTH_SHORT).show();
 
+            // Kiểm tra email có đúng định dạng không
+            if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
+                forgotPassword_email.setError("Vui lòng nhập email hợp lệ");
+                forgotPassword_email.requestFocus();
+                return;
+            }
+
+            // Nếu email hợp lệ, gửi yêu cầu reset mật khẩu
+            auth.sendPasswordResetEmail(userEmail).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(ForgotPasswordActivity.this, "Vui lòng kiểm tra email của bạn!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+                    finish(); // Đóng màn hình hiện tại để tránh quay lại.
+                } else {
+                    String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
+                    Toast.makeText(ForgotPasswordActivity.this, "Thao tác thất bại - Lý do: " + errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
         });
-        forgotPassword_back.setOnClickListener(v -> startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class)));
 
-
+        // Xử lý khi nhấn nút "Quay lại"
+        forgotPassword_back.setOnClickListener(v -> {
+            startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+            finish(); // Đóng màn hình hiện tại.
+        });
     }
 }
