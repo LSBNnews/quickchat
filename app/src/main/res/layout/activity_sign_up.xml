@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/white"
     tools:context=".SignUpActivity">
@@ -12,8 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/signup"
-        android:layout_marginTop="5dp" />
-
+        android:layout_marginBottom="-50dp"
+        android:scaleType="fitXY"
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,22 +24,25 @@
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_gravity="center"
-        android:layout_marginTop="0dp"
-        android:paddingBottom="24dp" />
+        android:paddingBottom="10dp" />
 
     <EditText
         android:id="@+id/usernameEditText"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:hint="Tên người dùng"
         android:padding="12dp"
         android:background="@drawable/type_box"
         android:inputType="textPersonName"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+
+        />
 
     <EditText
         android:id="@+id/passwordEditText"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:hint="Mật khẩu"
         android:padding="12dp"
@@ -47,7 +52,8 @@
 
     <EditText
         android:id="@+id/confirmPasswordEditText"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:hint="Xác nhận mật khẩu"
         android:padding="12dp"
@@ -57,7 +63,8 @@
 
     <EditText
         android:id="@+id/emailEditText"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:hint="Email"
         android:padding="12dp"
@@ -67,9 +74,12 @@
 
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="match_parent"
+        android:layout_width="225dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="Đăng ký"
+        android:layout_marginTop="30dp"
+        android:textSize="17dp"
         android:textStyle="bold"
         android:background="@drawable/purple_button"
         android:textColor="@color/white"
@@ -80,6 +90,7 @@
         android:layout_height="wrap_content"
         android:text="Nếu đã có tài khoản ?"
         android:textColor="@color/black"
+        android:textSize="17dp"
         android:layout_gravity="center" />
 
     <TextView
@@ -89,7 +100,9 @@
         android:text="Đăng nhập ngay"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:textSize="17dp"
         android:layout_gravity="center"
         android:paddingTop="4dp" />
+
 
 </LinearLayout>
