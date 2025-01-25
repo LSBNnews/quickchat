@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "645669513344",
+    "project_id": "quickchat-3f1ff",
+    "storage_bucket": "quickchat-3f1ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645669513344:android:f7d8bd1c0a3d4edb295e65",
+        "android_client_info": {
+          "package_name": "com.example.quickchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645669513344-9n0die7javsqcni01f0uopg93shf74jl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.quickchat",
+            "certificate_hash": "ff0ac7edd302bb70540cade25862767392c0868c"
+          }
+        },
+        {
+          "client_id": "645669513344-hd7s63vb3avjrcco7pv018k1tn1g96e7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuMZrOasetIoPMmm7ixDjIxdeitwbFfrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645669513344-1uphhh6bnppg2dg6b2fdsl2iigri6s9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
