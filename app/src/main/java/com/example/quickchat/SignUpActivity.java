@@ -50,6 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if(username.isEmpty()) signup_username.setError("Không để trống tên người dùng");
                 if (password.isEmpty()) signup_password.setError("Không để trống mật khẩu");
                 if (confirmPassword.isEmpty()) signup_confirmPassword.setError("Không để trống xác nhận mật khẩu");
+                if (!confirmPassword.equals(password)) signup_confirmPassword.setError("Mật khẩu không khớp");
                 if (email.isEmpty()) signup_email.setError("Không để trống email");
                 else {
                     auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -61,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                             }
                             else {
-                             Toast.makeText(SignUpActivity.this, "Đăng ký thất bại" + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                             Toast.makeText(SignUpActivity.this, "Đăng ký thất bại - Lý do: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
