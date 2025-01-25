@@ -18,21 +18,6 @@ public class MainActivity extends AppCompatActivity {
         Button signUpButton = findViewById(R.id.signUpButton);
         Button logInButton = findViewById(R.id.SignInButton);
 
-        // Tạo sự kiện cho button Signup chuyển hướng sang SignUpActivity
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        logInButton.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        }));
     }
 }
