@@ -8,43 +8,84 @@
     android:background="@color/white"
     tools:context=".MainActivity">
 
+    <!-- ImageView welcome -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="323dp"
+        android:layout_height="350dp"
+        app:srcCompat="@drawable/welcome"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp" />
+
+    <!-- ImageView qc_full_text -->
+    <ImageView
+        android:id="@+id/quickChatLogo"
+        android:layout_width="261dp"
+        android:layout_height="95dp"
+        app:srcCompat="@drawable/qc_full_text"
+        app:layout_constraintTop_toBottomOf="@id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="-40dp" />
+
+    <!-- TextView Chào mừng đến với Quick Chat -->
     <TextView
+        android:id="@+id/welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Chào mừng đến với Quick Chat !"
         android:textColor="@color/black"
         android:textSize="22dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.595"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.653" />
+        app:layout_constraintTop_toBottomOf="@id/quickChatLogo" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="322dp"
-        android:layout_height="495dp"
-        app:srcCompat="@drawable/welcome"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="-37dp" />
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="261dp"
-        android:layout_height="95dp"
-        app:srcCompat="@drawable/qc_full_text"
-        tools:layout_editor_absoluteX="75dp"
-        tools:layout_editor_absoluteY="318dp" />
-
+    <!-- TextView Ứng dụng nhắn tin nhanh... -->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ứng dụng nhắn tin nhanh, giúp bạn kết nối mọi lúc mọi \n nơi chỉ với vài thao tác đơn giản"
-        android:textSize=""
-        tools:layout_editor_absoluteX="37dp"
-        tools:layout_editor_absoluteY="505dp" />
+        android:textSize="15dp"
+        app:layout_constraintTop_toBottomOf="@id/welcome"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Button Đăng ký -->
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="225dp"
+        android:layout_height="54dp"
+        android:background="@drawable/stroke_button"
+        android:text="Đăng ký"
+        android:textColor="#9900ff"
+        android:textStyle="bold"
+        android:elevation="10dp"
+        android:translationZ="4dp"
+        app:layout_constraintTop_toBottomOf="@id/description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp" />
+
+    <!-- Button Đăng nhập -->
+    <Button
+        android:id="@+id/SignInButton"
+        android:layout_width="225dp"
+        android:layout_height="54dp"
+        android:background="@drawable/purple_button"
+        android:text="Đăng nhập"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:elevation="10dp"
+        android:translationZ="4dp"
+        app:layout_constraintTop_toBottomOf="@id/signUpButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
