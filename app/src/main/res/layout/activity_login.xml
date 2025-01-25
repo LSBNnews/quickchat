@@ -24,23 +24,24 @@
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_gravity="center"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/usernameTypeText"
+        android:id="@+id/log_email"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:hint="Tên người dùng"
+        android:hint="Email"
         android:padding="12dp"
         android:background="@drawable/type_box"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         android:layout_marginBottom="12dp"
 
-        />
+        tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/passwordTypeText"
+        android:id="@+id/log_password"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
@@ -48,64 +49,70 @@
         android:padding="12dp"
         android:background="@drawable/type_box"
         android:inputType="textPassword"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        tools:ignore="HardcodedText" />
     <TextView
-        android:id="@+id/forgotPassword"
+        android:id="@+id/log_forgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quên mật khẩu ?"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:layout_gravity="right"
-        android:layout_marginRight="40dp"
-        android:paddingTop="4dp" />
+        android:layout_marginEnd="40dp"
+        android:paddingTop="4dp"
+        tools:ignore="HardcodedText,RtlHardcoded" />
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/log_button"
         android:layout_width="250dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="Đăng nhập"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:textStyle="bold"
         android:background="@drawable/purple_button"
         android:textColor="@color/white"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="5dp"
         android:elevation="20dp"
-        android:translationZ="4dp"/>
+        android:translationZ="4dp"
+        tools:ignore="HardcodedText" />
     <Button
-        android:id="@+id/loginGoogle"
+        android:id="@+id/log_google"
         android:layout_width="250dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="Đăng nhập bằng Google"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:textStyle="bold"
         android:background="@drawable/black_stroke_button"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="16dp"
         android:elevation="20dp"
-        android:translationZ="4dp"/>
+        android:translationZ="4dp"
+        tools:ignore="HardcodedText" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nếu đã có tài khoản ?"
         android:textColor="@color/black"
-        android:textSize="17dp"
-        android:layout_gravity="center" />
+        android:textSize="17sp"
+        android:layout_gravity="center"
+        tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/loginTextView"
+        android:id="@+id/log_signupRedirect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Đăng ký ngay"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="17dp"
+        android:textSize="17sp"
         android:layout_gravity="center"
-        android:paddingTop="4dp" />
+        android:paddingTop="4dp"
+        tools:ignore="HardcodedText" />
 
 
 
