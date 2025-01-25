@@ -17,7 +17,8 @@ import java.util.Objects;
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText signup_username, signup_password, signup_confirmPassword, signup_email;
-
+    FirebaseDatabase database;
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +42,6 @@ public class SignUpActivity extends AppCompatActivity {
             String password = signup_password.getText().toString().trim();
             String confirmPassword = signup_confirmPassword.getText().toString().trim();
             String email = signup_email.getText().toString().trim();
-
-
 
             if(TextUtils.isEmpty(username)) {
                 signup_username.setError("Không để trống tên người dùng");
@@ -69,6 +68,12 @@ public class SignUpActivity extends AppCompatActivity {
                 signup_email.requestFocus();
             }
             else {
+                database = FirebaseDatabase.getInstance();
+                reference = database.getReference("users");
+
+                HelperClass helperClass = new HelperClass(username, password, email);
+                reference.child(username).setValue(helperClass);
+
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();

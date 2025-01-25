@@ -75,12 +75,8 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    // Kiểm tra lỗi đăng nhập
-                    if (e instanceof FirebaseAuthInvalidUserException) {
-                        Toast.makeText(LoginActivity.this, "Tài khoản không tồn tại", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
-                    }
+                        Toast.makeText(LoginActivity.this, "Tài khoản bạn nhập không tồn tại hoặc mật khẩu sai", Toast.LENGTH_SHORT).show();
                 });
     }
+
 }
