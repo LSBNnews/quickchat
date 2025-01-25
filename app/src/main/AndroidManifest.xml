@@ -10,9 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Quickchat">
-        <activity
-            android:name=".ForgotPasswordActitivy"
-            android:exported="false" />
+
         <activity
             android:name=".HomeScreenActivity"
             android:exported="false"
@@ -29,7 +27,7 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
-
+        <activity android:name=".ForgotPasswordActivity" />
     </application>
 
 </manifest>
