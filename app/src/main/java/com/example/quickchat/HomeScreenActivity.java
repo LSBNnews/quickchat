@@ -65,10 +65,14 @@ public class HomeScreenActivity extends AppCompatActivity {
                         String nameFromDB = snapshot.child(username).child("username").getValue(String.class);
                         String passwordFromDB = snapshot.child(username).child("password").getValue(String.class);
                         String imageFromDB = snapshot.child(username).child("imageURL").getValue(String.class);
+
                         Intent intent = new Intent(HomeScreenActivity.this, EditProfileActivity.class);
+
                         intent.putExtra("email", emailFromDB);
                         intent.putExtra("username", nameFromDB);
                         intent.putExtra("password", passwordFromDB);
+                        intent.putExtra("imageURL", imageFromDB);
+
                         startActivity(intent);
                     }
                 }

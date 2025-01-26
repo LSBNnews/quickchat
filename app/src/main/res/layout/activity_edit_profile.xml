@@ -67,6 +67,17 @@
         android:inputType="textEmailAddress"
         android:layout_marginBottom="14dp" />
 
+    <EditText
+        android:id="@+id/ep_image"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/email"
+        android:drawablePadding="8sp"
+        android:padding="12dp"
+        android:background="@drawable/type_box"
+        android:layout_marginBottom="14dp" />
+
     <Button
         android:id="@+id/ep_saveButton"
         android:layout_width="250dp"
