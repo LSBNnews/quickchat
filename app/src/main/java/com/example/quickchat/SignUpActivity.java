@@ -9,15 +9,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import java.util.HashMap;
 import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText signup_username, signup_password, signup_confirmPassword, signup_email;
-    FirebaseDatabase database;
     DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +68,27 @@ public class SignUpActivity extends AppCompatActivity {
                 signup_email.requestFocus();
             }
             else {
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("users");
-
-                HelperClass helperClass = new HelperClass(username, password, email);
-                reference.child(username).setValue(helperClass);
-
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        assert firebaseUser != null;
+                        String userID = firebaseUser.getUid();
+
+                        reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+                        HashMap<String, String> hashMap = new HashMap<>();
+                        hashMap.put("id", userID);
+                        hashMap.put("username", username);
+                        hashMap.put("password", password);
+                        hashMap.put("email", email);
+                        hashMap.put("imageURL", "default");
+                        reference.setValue(hashMap).addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful()) {
+                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                finish();
+                            }
+
+                        });
 
                     }
                     else {

@@ -22,10 +22,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Khởi tạo FirebaseAuth
         auth = FirebaseAuth.getInstance();
 
-        // Ánh xạ các view
         login_email = findViewById(R.id.log_email);
         login_password = findViewById(R.id.log_password);
         TextView login_forgotPassword = findViewById(R.id.log_forgotPassword);
@@ -75,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                        Toast.makeText(LoginActivity.this, "Tài khoản bạn nhập không tồn tại hoặc mật khẩu sai", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Email mà bạn vừa nhập không tồn tại hoặc nhập mật khẩu sai", Toast.LENGTH_SHORT).show();
                 });
     }
 
