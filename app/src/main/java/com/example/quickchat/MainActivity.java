@@ -19,14 +19,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if(firebaseUser != null) {
-//            startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
-//            finish();
-//        } else {
-//            // Nếu firebaseUser là null, không làm gì và tiếp tục với MainActivity
-//        }
-
         Button signUpButton = findViewById(R.id.signUpButton);
         Button logInButton = findViewById(R.id.SignInButton);
 

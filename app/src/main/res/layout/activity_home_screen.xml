@@ -21,9 +21,10 @@
         android:layout_width="100sp"
         android:layout_height="100sp"
         android:id="@+id/hs_image"
-        android:background="@drawable/purple_stroke_button"
+        android:background="@drawable/white_circle_background"
         android:layout_gravity="center_horizontal"
         android:elevation="50dp"
+
         android:translationZ="4dp"/>
 
     <TextView
@@ -57,7 +58,7 @@
             android:gravity="center"
             android:padding="15dp"
             android:paddingLeft="20sp"
-            android:background="@drawable/home_button"
+            android:background="@drawable/purple_circle_background"
 
             android:drawableTop="@drawable/settings_24"/>
 
@@ -67,22 +68,20 @@
             android:layout_height="60dp"
             android:elevation="10dp"
             android:translationZ="4dp"
-            android:text="Edit Profile"
             android:gravity="center"
             android:padding="15dp"
-
-            android:background="@drawable/home_button"
+            android:drawableTop="@drawable/edit"
+            android:background="@drawable/purple_circle_background"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:drawableTop="@drawable/user" />
+          />
 
         <Button
             android:id="@+id/hs_signout"
             android:layout_width="56dp"
             android:layout_height="match_parent"
-            android:background="@drawable/home_button"
-            android:drawableTop="@drawable/home_24"
-            android:text="Thoát"
+            android:drawableTop="@drawable/home"
+            android:background="@drawable/purple_circle_background"
             android:elevation="10dp"
             android:gravity="center"
 

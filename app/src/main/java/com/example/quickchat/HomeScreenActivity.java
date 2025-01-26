@@ -2,12 +2,21 @@ package com.example.quickchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -23,7 +32,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         TextView homescreen_username = findViewById(R.id.hs_username);
         Button homescreen_signout = findViewById(R.id.hs_signout);
         Button homescreen_editProfile = findViewById(R.id.hs_profile);
-
+        Button homescreen_settings = findViewById(R.id.hs_setting);
         Intent intent = getIntent();
         String name = intent.getStringExtra("username");
         String email = intent.getStringExtra("email");
@@ -32,15 +41,49 @@ public class HomeScreenActivity extends AppCompatActivity {
 
         homescreen_username.setText("Xin chào, " + name);
 
+        // Xử lý tính năng khi nhấn Đăng xuất
         homescreen_signout.setOnClickListener(v -> {
-            Toast.makeText(HomeScreenActivity.this, "Bạn đã đăng xuất tài khoản", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeScreenActivity.this, "Bạn đã đăng xuất khỏi ứng dụng", Toast.LENGTH_SHORT).show();
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
             finish();
         });
 
+        // Xử lý tính năng khi nhấn Edit Profile
+        homescreen_editProfile.setOnClickListener(v -> {
+
+            // Nạp data sang cho Edit Profile
+            String username = homescreen_username.getText().toString().trim();
+
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
+            Query checkUserDatabase = reference.orderByChild("username").equalTo(username);
+            checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists()) {
+                        String emailFromDB = snapshot.child(username).child("email").getValue(String.class);
+                        String nameFromDB = snapshot.child(username).child("username").getValue(String.class);
+                        String passwordFromDB = snapshot.child(username).child("password").getValue(String.class);
+                        String imageFromDB = snapshot.child(username).child("imageURL").getValue(String.class);
+                        Intent intent = new Intent(HomeScreenActivity.this, EditProfileActivity.class);
+                        intent.putExtra("email", emailFromDB);
+                        intent.putExtra("username", nameFromDB);
+                        intent.putExtra("password", passwordFromDB);
+                        startActivity(intent);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        });
 
 
 
     }
+
+
+
+
 }
