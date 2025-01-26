@@ -19,7 +19,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="100sp"
         android:layout_height="100sp"
-        android:id="@+id/profile_image"
+        android:id="@+id/hs_image"
         android:background="@drawable/purple_stroke_button"
         android:layout_gravity="center_horizontal"
         android:elevation="50dp"
@@ -28,7 +28,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/profile_username"
+        android:id="@+id/hs_username"
         android:text="Username"
         android:textSize="27sp"
         android:textStyle="bold"
@@ -38,7 +38,6 @@
         tools:ignore="HardcodedText" />
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +46,7 @@
         android:layout_marginBottom="10dp">
 
         <Button
-            android:id="@+id/homeScreen_setting"
+            android:id="@+id/hs_setting"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -61,7 +60,7 @@
             android:drawableTop="@drawable/settings_24"/>
 
         <Button
-            android:id="@+id/homeScreen_profile"
+            android:id="@+id/hs_profile"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:elevation="10dp"
@@ -75,17 +74,16 @@
             android:drawableTop="@drawable/user" />
 
         <Button
-            android:id="@+id/homeScreen_signout"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:elevation="10dp"
-            android:translationZ="4dp"
-            android:gravity="center"
-            android:padding="15dp"
-
+            android:id="@+id/hs_signout"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
             android:background="@drawable/home_button"
             android:drawableTop="@drawable/home_24"
-            />
+            android:elevation="10dp"
+            android:gravity="center"
+
+            android:padding="15dp"
+            android:translationZ="4dp" />
     </LinearLayout>
 
 
@@ -103,6 +101,7 @@
         tools:ignore="HardcodedText,RtlHardcoded" />
 
     <EditText
+        android:id="@+id/hs_search"
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:background="@drawable/black_stroke_button"
@@ -110,7 +109,7 @@
         android:textStyle="italic"
         android:text="Tìm kiếm"
         android:textSize="17sp"
-        android:drawableLeft="@drawable/search_content"
+        android:drawableLeft="@drawable/search_24"
         android:paddingLeft="20sp" />
 
 
