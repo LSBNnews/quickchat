@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".SignUpActivity">
+    tools:context=".LoginActivity">
 
     <ImageView
         android:id="@+id/decor_background"
@@ -28,16 +28,16 @@
         tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/log_email"
+        android:id="@+id/log_username"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="Tên người dùng"
         android:padding="12dp"
-        android:drawableLeft="@drawable/email"
+        android:drawableLeft="@drawable/user"
         android:drawablePadding="8sp"
         android:background="@drawable/type_box"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         android:layout_marginBottom="12dp"
 
         tools:ignore="HardcodedText" />

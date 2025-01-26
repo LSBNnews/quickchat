@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.quickchat.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +22,7 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText signup_username, signup_password, signup_confirmPassword, signup_email;
     DatabaseReference reference;
+    FirebaseDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +39,14 @@ public class SignUpActivity extends AppCompatActivity {
         Button signup_button = findViewById(R.id.su_button);
         TextView signup_loginRedirect = findViewById(R.id.su_loginRedirect);
 
-        // Sự kiện khi người dùng nhấn nút đăng ký
+        // Chuyển hướng từ Đăng ký sang Đăng nhập
+        signup_loginRedirect.setOnClickListener(v -> startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
+
+        // Xử lý tính năng khi nhấn Đăng ký
         signup_button.setOnClickListener(v -> {
+
+            database = FirebaseDatabase.getInstance();
+            reference = database.getReference("users");
 
             String username = signup_username.getText().toString().trim();
             String password = signup_password.getText().toString().trim();
@@ -77,26 +86,12 @@ public class SignUpActivity extends AppCompatActivity {
             else {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = auth.getCurrentUser();
-                        assert firebaseUser != null;
-                        String userID = firebaseUser.getUid();
+                        User user = new User(username, email, password, "default");
+                        reference.child(username).setValue(user);
 
-                        reference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
-                        HashMap<String, String> hashMap = new HashMap<>();
-                        hashMap.put("id", userID);
-                        hashMap.put("username", username);
-                        hashMap.put("password", password);
-                        hashMap.put("email", email);
-                        hashMap.put("imageURL", "default");
-                        reference.setValue(hashMap).addOnCompleteListener(task1 -> {
-                            if(task1.isSuccessful()) {
-                                Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                                finish();
-                            }
-
-                        });
-
+                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                        finish();
                     }
                     else {
                      Toast.makeText(SignUpActivity.this, "Đăng ký thất bại - Lý do: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
@@ -105,7 +100,5 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
         });
-
-        signup_loginRedirect.setOnClickListener(v -> startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
     }
 }
