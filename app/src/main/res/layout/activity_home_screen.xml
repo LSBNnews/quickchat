@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/qc_decoration"
         android:scaleType="fitXY"
-        android:layout_marginBottom="-100sp"/>
+        android:layout_marginBottom="-150sp"/>
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -38,12 +38,16 @@
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <Button
+            android:id="@+id/homeScreen_setting"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:elevation="20dp"
@@ -51,9 +55,11 @@
             android:gravity="center"
             android:padding="10dp"
             android:background="@drawable/home_button"
-            />
+
+            android:drawableTop="@drawable/settings_24"/>
 
         <Button
+            android:id="@+id/homeScreen_profile"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:elevation="20dp"
@@ -64,10 +70,10 @@
 
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:drawableTop="@drawable/user"
-             />
+            android:drawableTop="@drawable/user" />
 
         <Button
+            android:id="@+id/homeScreen_signout"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:elevation="20dp"
@@ -75,7 +81,7 @@
             android:gravity="center"
             android:padding="10dp"
             android:background="@drawable/home_button"
-
+            android:drawableTop="@drawable/play_24"
             />
     </LinearLayout>
 
