@@ -50,6 +50,9 @@ dependencies {
     // Authentication with Credential Manager
     implementation("com.google.android.gms:play-services-auth:21.3.0")
 
+    // UI homeScreen
+    implementation("de.hdodenhof:circleimageview:2.2.0")
+    implementation("com.github.bumptech.glide:glide:4.8.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
