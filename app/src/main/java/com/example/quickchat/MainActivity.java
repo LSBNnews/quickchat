@@ -7,26 +7,25 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 
 public class MainActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(firebaseUser != null) {
-            startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
-            finish();
-        }
-    }
-
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if(firebaseUser != null) {
+//            startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
+//            finish();
+//        } else {
+//            // Nếu firebaseUser là null, không làm gì và tiếp tục với MainActivity
+//        }
 
         Button signUpButton = findViewById(R.id.signUpButton);
         Button logInButton = findViewById(R.id.SignInButton);

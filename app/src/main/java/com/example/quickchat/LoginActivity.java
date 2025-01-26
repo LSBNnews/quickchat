@@ -10,12 +10,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.quickchat.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText login_email, login_password;
+    FirebaseUser firebaseUser;
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,12 @@ public class LoginActivity extends AppCompatActivity {
         // Thực hiện đăng nhập
         auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
+                    firebaseUser = auth.getCurrentUser();
+                    if (firebaseUser != null) {
+                        // Kiểm tra và thêm thông tin user vào Firebase Realtime Database
+                        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+                        reference.setValue(new User(firebaseUser.getUid(), email, "default"));
+                    }
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
                     finish();

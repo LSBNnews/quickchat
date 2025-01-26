@@ -107,7 +107,7 @@
         android:background="@drawable/black_stroke_button"
         android:textColor="@color/black"
         android:textStyle="italic"
-        android:text="Tìm kiếm"
+        android:hint="Tìm kiếm"
         android:textSize="17sp"
         android:drawableLeft="@drawable/search_24"
         android:paddingLeft="20sp" />

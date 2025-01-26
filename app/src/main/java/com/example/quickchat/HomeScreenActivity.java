@@ -35,31 +35,32 @@ public class HomeScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
-
+        homescreen_image = findViewById(R.id.hs_image);
+        homescreen_username = findViewById(R.id.hs_username);
         homescreen_signout = findViewById(R.id.hs_signout);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
-        homescreen_signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
-                finish();
-            }
+        homescreen_signout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
+
         });
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                homescreen_username.setText(user.getUsername());
-
-                if(user.getImageURL().equals("default")) {
-                    homescreen_image.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(HomeScreenActivity.this).load(user.getImageURL()).into(homescreen_image);
-                }
+//                User user = snapshot.getValue(User.class);
+//
+//                if (user != null) {
+//                    homescreen_username.setText(user.getUsername());
+//                }
+//
+//                if(user.getImageURL().equals("default")) {
+//                    homescreen_image.setImageResource(R.mipmap.ic_launcher);
+//                } else {
+//                    Glide.with(HomeScreenActivity.this).load(user.getImageURL()).into(homescreen_image);
+//                }
             }
 
             @Override
@@ -67,9 +68,6 @@ public class HomeScreenActivity extends AppCompatActivity {
 
             }
         });
-
-        homescreen_image = findViewById(R.id.hs_image);
-        homescreen_username = findViewById(R.id.hs_username);
 
     }
 }

@@ -3,6 +3,7 @@ package com.example.quickchat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -67,6 +68,12 @@ public class SignUpActivity extends AppCompatActivity {
                 signup_email.setError("Không để trống email");
                 signup_email.requestFocus();
             }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                signup_email.setError("Vui lòng điền email hợp lệ");
+                signup_email.requestFocus();
+            }
+
             else {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
