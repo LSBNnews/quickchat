@@ -27,6 +27,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         Button forgotPassword_back = findViewById(R.id.fpBack);
         Button forgotPassword_confirm = findViewById(R.id.fpConfirm);
 
+        forgotPassword_back.setOnClickListener(v -> {
+            startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+            finish();
+        });
+
         // Xử lý khi nhấn nút "Xác nhận"
         forgotPassword_confirm.setOnClickListener(v -> {
             String userEmail = forgotPassword_email.getText().toString().trim();
@@ -58,10 +63,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             });
         });
 
-        // Xử lý khi nhấn nút "Quay lại"
-        forgotPassword_back.setOnClickListener(v -> {
-            startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
-            finish(); // Đóng màn hình hiện tại.
-        });
+
     }
 }
