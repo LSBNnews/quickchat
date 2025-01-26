@@ -33,13 +33,10 @@ public class HomeScreenActivity extends AppCompatActivity {
         Button homescreen_signout = findViewById(R.id.hs_signout);
         Button homescreen_editProfile = findViewById(R.id.hs_profile);
         Button homescreen_settings = findViewById(R.id.hs_setting);
+
         Intent intent = getIntent();
         String name = intent.getStringExtra("username");
-        String email = intent.getStringExtra("email");
-        String password = intent.getStringExtra("password");
-        String image = intent.getStringExtra("imageURL");
-
-        homescreen_username.setText("Xin chào, " + name);
+        homescreen_username.setText(name);
 
         // Xử lý tính năng khi nhấn Đăng xuất
         homescreen_signout.setOnClickListener(v -> {
@@ -53,18 +50,18 @@ public class HomeScreenActivity extends AppCompatActivity {
         homescreen_editProfile.setOnClickListener(v -> {
 
             // Nạp data sang cho Edit Profile
-            String username = homescreen_username.getText().toString().trim();
+            String userUsername = homescreen_username.getText().toString().trim();
 
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
-            Query checkUserDatabase = reference.orderByChild("username").equalTo(username);
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+            Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
             checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot.exists()) {
-                        String emailFromDB = snapshot.child(username).child("email").getValue(String.class);
-                        String nameFromDB = snapshot.child(username).child("username").getValue(String.class);
-                        String passwordFromDB = snapshot.child(username).child("password").getValue(String.class);
-                        String imageFromDB = snapshot.child(username).child("imageURL").getValue(String.class);
+                        String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
+                        String nameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
+                        String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
+                        String imageFromDB = snapshot.child(userUsername).child("imageURL").getValue(String.class);
 
                         Intent intent = new Intent(HomeScreenActivity.this, EditProfileActivity.class);
 
