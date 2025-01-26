@@ -27,6 +27,20 @@
         android:paddingBottom="10dp" />
 
     <EditText
+        android:id="@+id/su_name"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/user"
+        android:drawablePadding="8sp"
+        android:hint="Tên đăng nhập"
+        android:padding="12dp"
+        android:background="@drawable/type_box"
+        android:inputType="textPersonName"
+        android:layout_marginBottom="12dp"
+
+        />
+    <EditText
         android:id="@+id/su_username"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
@@ -78,7 +92,7 @@
         android:padding="12dp"
         android:background="@drawable/type_box"
         android:inputType="textEmailAddress"
-        android:layout_marginBottom="14dp" />
+         />
 
     <Button
         android:id="@+id/su_button"

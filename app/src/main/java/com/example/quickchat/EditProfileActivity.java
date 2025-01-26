@@ -19,9 +19,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class EditProfileActivity extends AppCompatActivity {
-    private EditText edit_username, edit_password, edit_email, edit_image;
-    private String name, email, password, image;
+    EditText edit_username, edit_email, edit_password, edit_image;
+
+    String nameUser, usernameUser, emailUser, imageUser, passwordUser;
     DatabaseReference reference;
+    boolean isChanged = false;
+    boolean isError = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,113 +34,77 @@ public class EditProfileActivity extends AppCompatActivity {
         edit_password = findViewById(R.id.ep_password);
         edit_email = findViewById(R.id.ep_email);
         edit_image = findViewById(R.id.ep_image);
+
         Button edit_backButton = findViewById(R.id.ep_backButton);
         Button edit_saveButton = findViewById(R.id.ep_saveButton);
 
-        Intent intent = getIntent();
-        name = intent.getStringExtra("username");
-        email = intent.getStringExtra("email");
-        password = intent.getStringExtra("password");
-        image = intent.getStringExtra("imageURL");
+        reference = FirebaseDatabase.getInstance().getReference("users");
 
-        edit_username.setText(name);
-        edit_password.setText(password);
-        edit_email.setText(email);
-        edit_image.setText(image);
+        Intent intent = getIntent();
+        nameUser = intent.getStringExtra("name");
+        usernameUser = intent.getStringExtra("username");
+        emailUser = intent.getStringExtra("email");
+        imageUser = intent.getStringExtra("imageURL");
+        passwordUser = intent.getStringExtra("password");
+
+        edit_username.setText(usernameUser);
+        edit_email.setText(emailUser);
+        edit_image.setText(imageUser);
+        edit_password.setText(passwordUser);
 
         // Xử lý tính năng cho Xác nhận
         edit_saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                reference = FirebaseDatabase.getInstance().getReference("users");
-                boolean isChanged = false;
+            public void onClick(View view) {
+                boolean isError = false;
 
-                if(!name.equals(edit_username.getText().toString().trim())) {
-                    if(name.isEmpty()) {
-                        edit_username.setError("Không được để trống tên");
-                        edit_username.requestFocus();
-                    } else {
-                        reference.child(name).child("username").setValue(edit_username.getText().toString().trim());
-                        name = edit_username.getText().toString().trim();
-                        isChanged = true;
-                    }
-
+                if (edit_username.getText().toString().trim().isEmpty()) {
+                    edit_username.setError("Tên người dùng không được để trống!");
+                    isError = true;
+                }
+                if (edit_email.getText().toString().trim().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(edit_email.getText().toString()).matches()) {
+                    edit_email.setError("Email không hợp lệ!");
+                    isError = true;
+                }
+                if (edit_password.getText().toString().trim().isEmpty() || edit_password.getText().toString().length() < 6) {
+                    edit_password.setError("Mật khẩu không hợp lệ");
+                    isError = true;
+                }
+                if (edit_image.getText().toString().trim().isEmpty()) {
+                    edit_image.setError(" Nội dung Image không được để trống!");
+                    isError = true;
                 }
 
-                // Xử lý trường hợp Email trống hoặc không đúng định dạng
-                if(!email.equals(edit_email.getText().toString().trim())) {
-                    if(email.isEmpty()) {
-                        edit_email.setError("Không được để trống email");
-                        edit_email.requestFocus();
-                    } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        edit_email.setError("Vui lòng điền đúng định dạng email");
-                        edit_email.requestFocus();
-                    } else {
-                        reference.child(name).child("email").setValue(edit_email.getText().toString().trim());
-                        email = edit_email.getText().toString().trim();
-                        isChanged = true;
-                    }
-
-                }
+                if (isError) return;
 
 
-                if(!password.equals(edit_password.getText().toString().trim())) {
-                    if(password.isEmpty()) {
-                        edit_password.setError("Không được để trống mật khẩu");
-                        edit_password.requestFocus();
-                    } else if(password.length() < 6) {
-                        edit_password.setError("Mật khẩu phải chứa tổi thiểu 6 kí tự");
-                        edit_password.requestFocus();
-                    } else {
-                        reference.child(name).child("password").setValue(edit_password.getText().toString().trim());
-                        password = edit_password.getText().toString().trim();
-                        isChanged = true;
-                    }
-
-                }
-
-                if(!image.equals(edit_image.getText().toString().trim())) {
-                    if(image.isEmpty()) {
-                        edit_image.setError("Không được để trống file ảnh");
-                        edit_image.requestFocus();
-                    } else {
-                        reference.child(name).child("image").setValue(edit_image.getText().toString().trim());
-                        image = edit_image.getText().toString().trim();
-                        isChanged = true;
-                    }
-
-                }
-
-                if(isChanged) {
+                if (isNameChanged() || isPasswordChanged() || isEmailChanged() || isImageChanged()){
                     Toast.makeText(EditProfileActivity.this, "Đã lưu thông tin thay đổi", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(EditProfileActivity.this, "Không có thông tin gì thay đổi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditProfileActivity.this, "Không có thông tin nào bị thay đổi", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
         // Xử lý tính năng cho Quay lại
         edit_backButton.setOnClickListener(v -> {
-
-            // Nạp data sang cho Home Screen
-            String userUsername = edit_username.getText().toString().trim();
-
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-            Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
+            String user = intent.getStringExtra("name");
+            reference = FirebaseDatabase.getInstance().getReference("users");
+            Query checkUserDatabase = reference.orderByChild("name").equalTo(user);
             checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot.exists()) {
-                        String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
-                        String nameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
-                        String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
-                        String imageFromDB = snapshot.child(userUsername).child("imageURL").getValue(String.class);
+                        String namefromDB = snapshot.child(user).child("name").getValue(String.class);
+                        String usernamefromDB = snapshot.child(user).child("username").getValue(String.class);
+                        String emailFromDB = snapshot.child(user).child("email").getValue(String.class);
+                        String passwordFromDB = snapshot.child(user).child("password").getValue(String.class);
+                        String imageFromDB = snapshot.child(user).child("imageURL").getValue(String.class);
 
                         Intent intent = new Intent(EditProfileActivity.this, HomeScreenActivity.class);
-
+                        intent.putExtra("name", namefromDB);
+                        intent.putExtra("username", usernamefromDB);
                         intent.putExtra("email", emailFromDB);
-                        intent.putExtra("username", nameFromDB);
                         intent.putExtra("password", passwordFromDB);
                         intent.putExtra("imageURL", imageFromDB);
 
@@ -152,11 +119,47 @@ public class EditProfileActivity extends AppCompatActivity {
             });
 
         });
-
-
-
     }
 
+
+    // Các hàm liên quan để hỗ trợ
+    private boolean isNameChanged() {
+        if (!usernameUser.equals(edit_username.getText().toString().trim())){
+            reference.child(nameUser).child("username").setValue(edit_username.getText().toString().trim());
+            usernameUser = edit_username.getText().toString().trim();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private boolean isEmailChanged() {
+        if (!emailUser.equals(edit_email.getText().toString().trim())){
+            reference.child(nameUser).child("email").setValue(edit_email.getText().toString().trim());
+            emailUser = edit_email.getText().toString().trim();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private boolean isPasswordChanged() {
+        if (!passwordUser.equals(edit_password.getText().toString().trim())){
+            reference.child(nameUser).child("password").setValue(edit_password.getText().toString().trim());
+            passwordUser = edit_password.getText().toString().trim();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isImageChanged() {
+        if (!imageUser.equals(edit_image.getText().toString().trim())){
+            reference.child(nameUser).child("imageURL").setValue(edit_image.getText().toString().trim());
+            imageUser = edit_image.getText().toString().trim();
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 

@@ -23,14 +23,14 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText login_username, login_password;
+    private EditText login_name, login_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login_username = findViewById(R.id.log_username);
+        login_name = findViewById(R.id.log_name);
         login_password = findViewById(R.id.log_password);
         TextView login_forgotPassword = findViewById(R.id.log_forgotPassword);
         TextView login_signupRedirect = findViewById(R.id.log_signupRedirect);
@@ -51,13 +51,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        String userUsername = login_username.getText().toString().trim();
+        String userUsername = login_name.getText().toString().trim();
         String userPassword = login_password.getText().toString().trim();
 
         // Kiểm tra đầu vào
         if (TextUtils.isEmpty(userUsername)) {
-            login_username.setError("Không để trống tên người dùng");
-            login_username.requestFocus();
+            login_name.setError("Không để trống tên người dùng");
+            login_name.requestFocus();
             return;
         }
 
@@ -68,33 +68,34 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
+        Query checkUserDatabase = reference.orderByChild("name").equalTo(userUsername);
         checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
-                    login_username.setError(null);
                     String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
+
                     if (passwordFromDB.equals(userPassword)) {
-                        login_username.setError(null);
-                        String nameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
+                        String namefromDB = snapshot.child(userUsername).child("name").getValue(String.class);
+                        String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
                         String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
                         String imageFromDB = snapshot.child(userUsername).child("imageURL").getValue(String.class);
                         Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
                         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                        intent.putExtra("username", nameFromDB);
+                        intent.putExtra("name", namefromDB);
+                        intent.putExtra("username", usernameFromDB);
                         intent.putExtra("email", emailFromDB);
                         intent.putExtra("password", passwordFromDB);
                         intent.putExtra("imageURL", imageFromDB);
                         startActivity(intent);
                         finish();
                     } else {
-                        login_password.setError("Sai mật khẩu");
+                        login_password.setError("Bạn nhập sai mật khẩu");
                         login_password.requestFocus();
                     }
                 } else {
-                    login_username.setError("Tài khoản không tồn tại");
-                    login_username.requestFocus();
+                    login_name.setError("Tài khoản này không tồn tại");
+                    login_name.requestFocus();
                 }
             }
             @Override

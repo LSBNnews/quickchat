@@ -28,11 +28,11 @@
         tools:ignore="HardcodedText" />
 
     <EditText
-        android:id="@+id/log_username"
+        android:id="@+id/log_name"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:hint="Tên người dùng"
+        android:hint="Tên đăng nhập"
         android:padding="12dp"
         android:drawableLeft="@drawable/user"
         android:drawablePadding="8sp"
