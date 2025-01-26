@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,11 +81,9 @@ public class HomeScreenActivity extends AppCompatActivity {
             });
         });
 
-
-
+        homescreen_settings.setOnClickListener(v -> {
+            Toast.makeText(HomeScreenActivity.this, "Tính năng này đang phát triển", Toast.LENGTH_SHORT).show();
+        });
     }
-
-
-
 
 }
