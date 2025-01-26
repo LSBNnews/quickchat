@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".HomeScreenActivity">
@@ -48,40 +49,42 @@
         <Button
             android:id="@+id/homeScreen_setting"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:elevation="10dp"
-            android:translationZ="4dp"
+            android:translationZ="12dp"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="15dp"
+            android:paddingLeft="20sp"
             android:background="@drawable/home_button"
 
             android:drawableTop="@drawable/settings_24"/>
 
         <Button
             android:id="@+id/homeScreen_profile"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:elevation="10dp"
             android:translationZ="4dp"
             android:gravity="center"
-            android:padding="10dp"
-            android:background="@drawable/home_button"
+            android:padding="15dp"
 
+            android:background="@drawable/home_button"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:drawableTop="@drawable/user" />
 
         <Button
             android:id="@+id/homeScreen_signout"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:elevation="10dp"
             android:translationZ="4dp"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="15dp"
+
             android:background="@drawable/home_button"
-            android:drawableTop="@drawable/play_24"
+            android:drawableTop="@drawable/home_24"
             />
     </LinearLayout>
 
