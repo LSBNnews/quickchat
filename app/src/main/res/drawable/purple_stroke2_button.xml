@@ -5,7 +5,7 @@
 
     <!-- Viền -->
     <stroke
-        android:width="3dp"
+        android:width="2dp"
         android:color="#9900FF" />
 
     <!-- Góc bo tròn -->

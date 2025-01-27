@@ -25,6 +25,37 @@
         android:layout_gravity="center"
         android:paddingBottom="10dp" />
 
+    <LinearLayout
+        android:layout_width="350sp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:id="@+id/ep_uploadImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/photo"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/purple_stroke2_button"/>
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Tải hình ảnh lên cho hồ sơ của bạn"
+            android:textStyle="italic"
+            android:textSize="17sp"
+            android:textColor="#9900ff"
+
+            />
+
+    </LinearLayout>
+
     <EditText
         android:id="@+id/ep_username"
         android:layout_width="350dp"
@@ -66,43 +97,6 @@
         android:background="@drawable/type_box"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="14dp" />
-
-    <LinearLayout
-        android:layout_width=""
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:background="@drawable/purple_stroke2_button">
-
-        <ImageView
-            android:id="@+id/ep_avatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/photo"
-            android:scaleType="centerCrop"
-            android:layout_marginEnd="16dp" />
-
-        <TextView
-            android:id="@+id/ep_chooseImage"
-            android:layout_gravity="center_vertical"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:text="Tải hình ảnh lên"
-            android:textSize="17sp"
-            android:textColor="#9900ff"
-
-             />
-
-
-
-    </LinearLayout>
-
-
-
-
-
 
     <Button
         android:id="@+id/ep_saveButton"

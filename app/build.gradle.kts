@@ -46,7 +46,7 @@ dependencies {
     // Add the dependency for the Firebase Authentication library
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics:22.2.0")
-
+    implementation("com.google.firebase:firebase-storage:21.0.1")
 
     // UI homeScreen
     implementation("com.github.bumptech.glide:glide:4.16.0")
