@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +39,14 @@ public class HomeScreenActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String username = intent.getStringExtra("username");
         homescreen_username.setText(username);
+
+        // Xử lý avatar
+        String image = intent.getStringExtra("imageURL");
+        if(image.equals("default")) {
+            homescreen_image.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            Glide.with(HomeScreenActivity.this).load(image).into(homescreen_image);
+        }
 
         // Xử lý tính năng khi nhấn Đăng xuất
         homescreen_signout.setOnClickListener(v -> {
