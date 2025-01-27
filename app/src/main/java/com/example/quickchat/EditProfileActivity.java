@@ -1,11 +1,13 @@
 package com.example.quickchat;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,10 +21,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class EditProfileActivity extends AppCompatActivity {
-    EditText edit_username, edit_email, edit_password, edit_image;
+    EditText edit_username, edit_email, edit_password;
+
+    Button chooseImage;
 
     String nameUser, usernameUser, emailUser, imageUser, passwordUser;
     DatabaseReference reference;
+
     boolean isChanged = false;
     boolean isError = false;
     @Override
@@ -33,7 +38,7 @@ public class EditProfileActivity extends AppCompatActivity {
         edit_username = findViewById(R.id.ep_username);
         edit_password = findViewById(R.id.ep_password);
         edit_email = findViewById(R.id.ep_email);
-        edit_image = findViewById(R.id.ep_image);
+        chooseImage = findViewById(R.id.ep_chooseImage);
 
         Button edit_backButton = findViewById(R.id.ep_backButton);
         Button edit_saveButton = findViewById(R.id.ep_saveButton);
