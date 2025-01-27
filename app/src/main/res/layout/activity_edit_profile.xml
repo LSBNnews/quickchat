@@ -68,10 +68,12 @@
         android:layout_marginBottom="14dp" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width=""
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@drawable/purple_stroke2_button">
 
         <ImageView
             android:id="@+id/ep_avatar"
@@ -80,19 +82,16 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/photo"
             android:scaleType="centerCrop"
-            android:background="@drawable/purple_stroke2_button"
             android:layout_marginEnd="16dp" />
 
-        <Button
+        <TextView
             android:id="@+id/ep_chooseImage"
             android:layout_gravity="center_vertical"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:text="Chọn ảnh"
+            android:text="Tải hình ảnh lên"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:background="@drawable/purple_button"
-            android:textColor="@color/white"
+            android:textColor="#9900ff"
 
              />
 
