@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/signup"
-        android:layout_marginBottom="-50dp"
+        android:layout_marginBottom="-90dp"
         android:scaleType="fitXY"
         />
     <TextView
@@ -27,32 +27,17 @@
         android:paddingBottom="10dp" />
 
     <EditText
-        android:id="@+id/su_name"
-        android:layout_width="350dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/user"
-        android:drawablePadding="8sp"
-        android:hint="Tên đăng nhập"
-        android:padding="12dp"
-        android:background="@drawable/type_box"
-        android:inputType="textPersonName"
-        android:layout_marginBottom="12dp"
-
-        />
-    <EditText
         android:id="@+id/su_username"
         android:layout_width="350dp"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/baseline_assignment_ind_24"
+        android:drawableStart="@drawable/user"
         android:drawablePadding="8sp"
         android:hint="Tên người dùng"
         android:padding="12dp"
         android:background="@drawable/type_box"
         android:inputType="textPersonName"
         android:layout_marginBottom="12dp"
-
         />
 
     <EditText

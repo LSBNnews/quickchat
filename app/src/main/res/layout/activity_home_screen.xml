@@ -11,7 +11,7 @@
         android:id="@+id/decor_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/signup"
+        android:src="@drawable/qc_decoration"
         android:layout_marginBottom="-150dp"
         android:scaleType="fitXY"
         />
@@ -88,33 +88,5 @@
             android:padding="15dp"
            />
     </LinearLayout>
-
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tin nhắn"
-        android:textSize="27sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_gravity="left"
-        android:layout_marginStart="5sp"
-        android:layout_marginBottom="10sp"
-        tools:ignore="HardcodedText,RtlHardcoded" />
-
-    <EditText
-        android:id="@+id/hs_search"
-        android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:background="@drawable/black_stroke_button"
-        android:textColor="@color/black"
-        android:textStyle="italic"
-        android:hint="Tìm kiếm"
-        android:textSize="17sp"
-        android:drawableLeft="@drawable/search_24"
-        android:paddingLeft="20sp" />
-
-
 
 </LinearLayout>

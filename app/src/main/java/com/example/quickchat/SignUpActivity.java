@@ -9,16 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.quickchat.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
-import com.google.firebase.auth.AuthResult;
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
@@ -26,93 +19,101 @@ import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
-    private EditText signup_name, signup_username, signup_password, signup_confirmPassword, signup_email;
-    DatabaseReference reference;
-    FirebaseDatabase database;
+    private DatabaseReference reference;
+    private EditText signup_username, signup_password, signup_confirmPassword, signup_email;
+    private Button signup_button;
+    private TextView signup_loginRedirect;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Khởi tạo FirebaseAuth
-        auth = FirebaseAuth.getInstance();
+        inializeFields();
 
-        // Liên kết các view
-        signup_name = findViewById(R.id.su_name);
+        signup_loginRedirect.setOnClickListener(v -> startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
+
+        signup_button.setOnClickListener(v -> createNewAccount());
+    }
+
+
+
+
+
+    private void inializeFields() {
+        auth = FirebaseAuth.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference();
         signup_username = findViewById(R.id.su_username);
         signup_password = findViewById(R.id.su_password);
         signup_confirmPassword = findViewById(R.id.su_confirm);
         signup_email = findViewById(R.id.su_email);
-        Button signup_button = findViewById(R.id.su_button);
-        TextView signup_loginRedirect = findViewById(R.id.su_loginRedirect);
+        signup_button = findViewById(R.id.su_button);
+        signup_loginRedirect = findViewById(R.id.su_loginRedirect);
+    }
 
-        // Chuyển hướng từ Đăng ký sang Đăng nhập
-        signup_loginRedirect.setOnClickListener(v -> startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
+    private void createNewAccount() {
+        String username = signup_username.getText().toString().trim();
+        String password = signup_password.getText().toString().trim();
+        String confirmPassword = signup_confirmPassword.getText().toString().trim();
+        String email = signup_email.getText().toString().trim();
 
-        // Xử lý tính năng khi nhấn Đăng ký
-        signup_button.setOnClickListener(v -> {
+        if (TextUtils.isEmpty(username)) {
+            signup_username.setError("Vui lòng điền tên người dùng");
+            signup_username.requestFocus();
+            return;
+        }
 
-            String name = signup_name.getText().toString().trim();
-            String username = signup_username.getText().toString().trim();
-            String password = signup_password.getText().toString().trim();
-            String confirmPassword = signup_confirmPassword.getText().toString().trim();
-            String email = signup_email.getText().toString().trim();
+        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            signup_email.setError("Vui lòng điền email hợp lệ");
+            signup_email.requestFocus();
+            return;
+        }
 
-            if(TextUtils.isEmpty(name)) {
-                signup_name.setError("Không để trống tên đăng nhập");
-                signup_name.requestFocus();
-                return;
-            }
+        if (TextUtils.isEmpty(password)) {
+            signup_password.setError("Vui lòng điền mật khẩu");
+            signup_password.requestFocus();
+            return;
+        }
 
-            if(TextUtils.isEmpty(username)) {
-                signup_username.setError("Không để trống tên người dùng");
-                signup_username.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(password)) {
-                signup_password.setError("Không để trống mật khẩu");
-                signup_password.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(confirmPassword)) {
-                signup_confirmPassword.setError("Không để trống xác nhận mật khẩu");
-                signup_confirmPassword.requestFocus();
-                return;
-            }
-            if (!confirmPassword.equals(password)) {
-                signup_confirmPassword.setError("Mật khẩu không khớp");
-                signup_confirmPassword.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(email)) {
-                signup_email.setError("Không để trống email");
-                signup_email.requestFocus();
-            }
+        if (password.length() < 6) {
+            signup_password.setError("Mật khẩu chứa tối thiểu 6 kí tự");
+            signup_password.requestFocus();
+            return;
+        }
 
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                signup_email.setError("Vui lòng điền email hợp lệ");
-                signup_email.requestFocus();
-            }
-            else {
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("users");
-                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = auth.getCurrentUser();
-                        String userID = firebaseUser.getUid();
+        if (TextUtils.isEmpty(confirmPassword)) {
+            signup_confirmPassword.setError("Vui lòng điền xác nhận mật khẩu");
+            signup_confirmPassword.requestFocus();
+            return;
+        }
 
-                        User user = new User(userID, name, username, email, password, "default");
-                        reference.child(name).setValue(user);
+        if (!confirmPassword.equals(password)) {
+            signup_confirmPassword.setError("Mật khẩu và xác nhận mật khẩu không trùng nhau");
+            signup_confirmPassword.requestFocus();
+        }
 
-                        Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                        finish();
-                    } else {
-                     Toast.makeText(SignUpActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+        else {
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String userID = Objects.requireNonNull(auth.getCurrentUser()).getUid();
 
-        });
+                    HashMap<Object, Object> userData = new HashMap<>();
+                    userData.put("id", userID);
+                    userData.put("username", username);
+                    userData.put("imageURL", "default");
+
+                    reference.child("users").child(userID).setValue(userData).addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful()) {
+                            Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                            finish();
+                        }
+                    });
+                }
+                else {
+                    Toast.makeText(SignUpActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }
