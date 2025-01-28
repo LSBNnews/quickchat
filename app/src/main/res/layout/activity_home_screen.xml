@@ -24,7 +24,7 @@
         android:background="@drawable/white_circle_background"
         android:layout_gravity="center_horizontal"
         android:elevation="50dp"
-
+        android:layout_marginBottom="10sp"
         android:translationZ="4dp"/>
 
     <TextView
@@ -34,6 +34,17 @@
         android:text="Username"
         android:textSize="27sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/hs_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mô tả về bản thân"
+        android:textSize="20sp"
+        android:textStyle="italic"
         android:textColor="@color/black"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="15sp"

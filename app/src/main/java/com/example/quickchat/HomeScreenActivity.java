@@ -26,7 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeScreenActivity extends AppCompatActivity {
 
     private CircleImageView homescreen_image;
-    private TextView homescreen_username;
+    private TextView homescreen_username, homescreen_description;
     private Button homescreen_signout, homescreen_editProfile, homescreen_settings;
     DatabaseReference reference;
     FirebaseAuth auth;
@@ -38,11 +38,11 @@ public class HomeScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_screen);
 
         initializeFields();
-        displayUsernameAndAvatar();
+        displayUserInfo();
 
         homescreen_signout.setOnClickListener(v -> signout());
 
-        homescreen_editProfile.setOnClickListener(v -> Toast.makeText(HomeScreenActivity.this, "Tính năng này đang phát triển", Toast.LENGTH_SHORT).show());
+        homescreen_editProfile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
 
         homescreen_settings.setOnClickListener(v -> Toast.makeText(HomeScreenActivity.this, "Tính năng này đang phát triển", Toast.LENGTH_SHORT).show());
     }
@@ -65,20 +65,23 @@ public class HomeScreenActivity extends AppCompatActivity {
         currentUser = auth.getCurrentUser();
         homescreen_image = findViewById(R.id.hs_image);
         homescreen_username = findViewById(R.id.hs_username);
+        homescreen_description = findViewById(R.id.hs_description);
         homescreen_signout = findViewById(R.id.hs_signout);
         homescreen_editProfile = findViewById(R.id.hs_profile);
         homescreen_settings = findViewById(R.id.hs_setting);
     }
 
-    private void displayUsernameAndAvatar() {
+    private void displayUserInfo() {
         String currentUserID = currentUser.getUid();
         reference.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot data) {
-                if (data.exists() && data.hasChild("username") && data.hasChild("imageURL")) {
+                if (data.exists() && data.hasChild("username") && data.hasChild("imageURL") && data.hasChild("description")) {
                     String retrieveUsername = data.child("username").getValue(String.class);
                     String retrieveImage = data.child("imageURL").getValue(String.class);
+                    String retrieveDescription = data.child("description").getValue(String.class);
 
+                    homescreen_description.setText(retrieveDescription);
                     homescreen_username.setText(retrieveUsername);
                     if (retrieveImage.equals("default")) {
                         homescreen_image.setImageResource(R.mipmap.ic_launcher);
