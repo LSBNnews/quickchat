@@ -34,7 +34,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         // Xử lý khi nhấn nút "Xác nhận"
         forgotPassword_confirm.setOnClickListener(v -> {
-            String userEmail = forgotPassword_email.getText().toString().trim();
+            String userEmail = forgotPassword_email.getText().toString();
 
             // Kiểm tra email có rỗng không
             if (TextUtils.isEmpty(userEmail)) {
@@ -55,10 +55,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Toast.makeText(ForgotPasswordActivity.this, "Vui lòng kiểm tra email của bạn!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
-                    finish(); // Đóng màn hình hiện tại để tránh quay lại.
+                    finish();
                 } else {
                     String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
-                    Toast.makeText(ForgotPasswordActivity.this, "Thao tác thất bại - Lý do: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgotPasswordActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
         });

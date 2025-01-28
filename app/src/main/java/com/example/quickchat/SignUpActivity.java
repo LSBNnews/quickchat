@@ -8,9 +8,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quickchat.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -46,8 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
         // Xử lý tính năng khi nhấn Đăng ký
         signup_button.setOnClickListener(v -> {
 
-            database = FirebaseDatabase.getInstance();
-            reference = database.getReference("users");
             String name = signup_name.getText().toString().trim();
             String username = signup_username.getText().toString().trim();
             String password = signup_password.getText().toString().trim();
@@ -89,18 +93,21 @@ public class SignUpActivity extends AppCompatActivity {
                 signup_email.setError("Vui lòng điền email hợp lệ");
                 signup_email.requestFocus();
             }
-
             else {
+                database = FirebaseDatabase.getInstance();
+                reference = database.getReference("users");
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        User user = new User(name, username, email, password, "default");
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        String userID = firebaseUser.getUid();
+
+                        User user = new User(userID, name, username, email, password, "default");
                         reference.child(name).setValue(user);
 
                         Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                         finish();
-                    }
-                    else {
+                    } else {
                      Toast.makeText(SignUpActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

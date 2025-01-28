@@ -1,7 +1,15 @@
 package com.example.quickchat.model;
 
 public class User {
-    private String name, username, email, password, imageURL;
+    private String id, name, username, email, password, imageURL;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -43,7 +51,8 @@ public class User {
         this.imageURL = imageURL;
     }
 
-    public User(String name, String username, String email, String password, String imageURL) {
+    public User(String id, String name, String username, String email, String password, String imageURL) {
+        this.id = id;
         this.name = name;
         this.username = username;
         this.email = email;

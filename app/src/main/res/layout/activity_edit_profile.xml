@@ -25,36 +25,19 @@
         android:layout_gravity="center"
         android:paddingBottom="10dp" />
 
-    <LinearLayout
-        android:layout_width="350sp"
+    <TextView
+        android:id="@+id/ep_id"
+        android:layout_width="350dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_marginBottom="12dp">
-
-        <ImageView
-            android:id="@+id/ep_uploadImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/photo"
-            android:scaleType="centerCrop"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/purple_stroke2_button"/>
-
-        <TextView
-            android:layout_gravity="center_vertical"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="Tải hình ảnh lên cho hồ sơ của bạn"
-            android:textStyle="italic"
-            android:textSize="17sp"
-            android:textColor="#9900ff"
-
-            />
-
-    </LinearLayout>
+        android:drawableStart="@drawable/android_phone"
+        android:drawablePadding="8sp"
+        android:hint="ID"
+        android:textSize="17sp"
+        android:padding="12dp"
+        android:background="@drawable/type_box"
+        android:inputType="textPersonName"
+        android:layout_marginBottom="12dp"/>
 
     <EditText
         android:id="@+id/ep_username"

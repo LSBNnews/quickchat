@@ -82,6 +82,7 @@
         android:elevation="20dp"
         android:translationZ="4dp"
         tools:ignore="HardcodedText" />
+
     <Button
         android:id="@+id/log_google"
         android:layout_width="250dp"

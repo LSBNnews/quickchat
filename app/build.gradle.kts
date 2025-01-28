@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
@@ -50,6 +51,7 @@ dependencies {
 
     // UI homeScreen
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.github.TutorialsAndroid:GButton:v1.0.19")
     implementation(libs.circleimageview)
 
     implementation(libs.appcompat)
@@ -57,6 +59,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -24,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText login_name, login_password;
-
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,46 +47,51 @@ public class LoginActivity extends AppCompatActivity {
         login_signupRedirect.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignUpActivity.class)));
 
         // Xử lý đăng nhập bằng Google
-        login_google.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class)));
+        login_google.setOnClickListener(v -> Toast.makeText(LoginActivity.this, "Tính năng này đang phát triển", Toast.LENGTH_SHORT).show());
     }
 
     private void loginUser() {
-        String userUsername = login_name.getText().toString().trim();
-        String userPassword = login_password.getText().toString().trim();
+        String name = login_name.getText().toString().trim();
+        String password = login_password.getText().toString().trim();
 
         // Kiểm tra đầu vào
-        if (TextUtils.isEmpty(userUsername)) {
+        if (TextUtils.isEmpty(name)) {
             login_name.setError("Không để trống tên người dùng");
             login_name.requestFocus();
             return;
         }
 
-        if (TextUtils.isEmpty(userPassword)) {
+        if (TextUtils.isEmpty(password)) {
             login_password.setError("Không để trống mật khẩu");
             login_password.requestFocus();
             return;
         }
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("name").equalTo(userUsername);
+        reference = FirebaseDatabase.getInstance().getReference("users");
+        Query checkUserDatabase = reference.orderByChild("name").equalTo(name);
         checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
-                    String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
+                    String passwordFromDB = snapshot.child(name).child("password").getValue(String.class);
 
-                    if (passwordFromDB.equals(userPassword)) {
-                        String namefromDB = snapshot.child(userUsername).child("name").getValue(String.class);
-                        String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
-                        String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
-                        String imageFromDB = snapshot.child(userUsername).child("imageURL").getValue(String.class);
+                    if (passwordFromDB.equals(password)) {
+                        String idfromDB = snapshot.child(name).child("id").getValue(String.class);
+                        String namefromDB = snapshot.child(name).child("name").getValue(String.class);
+                        String usernameFromDB = snapshot.child(name).child("username").getValue(String.class);
+                        String emailFromDB = snapshot.child(name).child("email").getValue(String.class);
+                        String imageFromDB = snapshot.child(name).child("imageURL").getValue(String.class);
                         Intent intent = new Intent(LoginActivity.this, HomeScreenActivity.class);
+
                         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+
+                        intent.putExtra("id", idfromDB);
                         intent.putExtra("name", namefromDB);
                         intent.putExtra("username", usernameFromDB);
                         intent.putExtra("email", emailFromDB);
                         intent.putExtra("password", passwordFromDB);
                         intent.putExtra("imageURL", imageFromDB);
+
                         startActivity(intent);
                         finish();
                     } else {
