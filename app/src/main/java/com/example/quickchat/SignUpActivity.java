@@ -63,12 +63,6 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            signup_email.setError("Vui lòng điền email hợp lệ");
-            signup_email.requestFocus();
-            return;
-        }
-
         if (TextUtils.isEmpty(password)) {
             signup_password.setError("Vui lòng điền mật khẩu");
             signup_password.requestFocus();
@@ -90,6 +84,12 @@ public class SignUpActivity extends AppCompatActivity {
         if (!confirmPassword.equals(password)) {
             signup_confirmPassword.setError("Mật khẩu và xác nhận mật khẩu không trùng nhau");
             signup_confirmPassword.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            signup_email.setError("Vui lòng điền email hợp lệ");
+            signup_email.requestFocus();
         }
 
         else {
@@ -107,6 +107,9 @@ public class SignUpActivity extends AppCompatActivity {
                             Toast.makeText(SignUpActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                             finish();
+                        }
+                        else {
+                            Toast.makeText(SignUpActivity.this, Objects.requireNonNull(task1.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
