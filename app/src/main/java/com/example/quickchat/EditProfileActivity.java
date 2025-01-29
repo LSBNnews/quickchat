@@ -75,8 +75,8 @@ public class EditProfileActivity extends AppCompatActivity {
                 if (data.exists() && data.hasChild("username") && data.hasChild("description")) {
                     String retrieveUsername = data.child("username").getValue(String.class);
                     String retrieveDescription = data.child("description").getValue(String.class);
+                    usernameChanged = data.child("username").getValue(String.class);
 
-                    usernameChanged = retrieveUsername;
                     editProfile_username.setText(retrieveUsername);
                     editProfile_description.setText(retrieveDescription);
                 }
@@ -118,12 +118,15 @@ public class EditProfileActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot data) {
                     if (data.exists()) {
-                        editProfile_username.setError("Tên người dùng này đã tồn tại");
-                        editProfile_username.requestFocus();
+                        for (DataSnapshot snapshot : data.getChildren()) {
+                            if (!snapshot.getKey().equals(currentUserID)) {
+                                editProfile_username.setError("Tên người dùng này đã tồn tại");
+                                editProfile_username.requestFocus();
+                                return;
+                            }
+                        }
                     }
-                    else {
-                        updateData(currentUserID, usernameInput, descriptionInput);
-                    }
+                    updateData(currentUserID, usernameInput, descriptionInput);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
@@ -132,8 +135,8 @@ public class EditProfileActivity extends AppCompatActivity {
             });
         }
         else {
-            if(descriptionInput.length() > 30) {
-                editProfile_description.setError("Mô tả bản thân không vượt quá 30 kí tự");
+            if(descriptionInput.length() > 20) {
+                editProfile_description.setError("Mô tả bản thân không vượt quá 20 kí tự");
                 editProfile_description.requestFocus();
             }
             else {

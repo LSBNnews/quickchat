@@ -76,20 +76,22 @@ public class HomeScreenActivity extends AppCompatActivity {
         reference.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot data) {
-                if (data.exists() && data.hasChild("username") && data.hasChild("imageURL") && data.hasChild("description")) {
+                if (data.exists()) {
                     String retrieveUsername = data.child("username").getValue(String.class);
                     String retrieveImage = data.child("imageURL").getValue(String.class);
-                    String retrieveDescription = data.child("description").getValue(String.class);
 
-                    homescreen_description.setText(retrieveDescription);
+                    if (data.hasChild("description")) {
+                        String retrieveDescription = data.child("description").getValue(String.class);
+                        homescreen_description.setText(retrieveDescription);
+                    }
+
                     homescreen_username.setText(retrieveUsername);
                     if (retrieveImage.equals("default")) {
                         homescreen_image.setImageResource(R.mipmap.ic_launcher);
                     }
-                }
-                else if (data.exists() && data.hasChild("username")) {
-                    String retrieveUsername = data.child("username").getValue(String.class);
-                    homescreen_username.setText(retrieveUsername);
+                } else {
+                    Toast.makeText(HomeScreenActivity.this, "Không thể lấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
                 }
             }
 
