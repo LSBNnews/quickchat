@@ -27,11 +27,13 @@
 
     <EditText
         android:id="@+id/ep_username"
-        android:layout_width="350dp"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/user"
         android:drawablePadding="8sp"
+        android:minWidth="350dp"
+        android:maxWidth="400dp"
         android:hint="Tên người dùng"
         android:padding="12dp"
         android:background="@drawable/type_box"
@@ -41,11 +43,13 @@
 
     <EditText
         android:id="@+id/ep_description"
-        android:layout_width="350dp"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/baseline_assignment_ind_24"
         android:drawablePadding="8sp"
+        android:minWidth="350dp"
+        android:maxWidth="400dp"
         android:hint="Mô tả về bản thân"
         android:padding="12dp"
         android:background="@drawable/type_box"

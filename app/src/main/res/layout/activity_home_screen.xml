@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
     tools:context=".HomeScreenActivity">
+
     <ImageView
         android:id="@+id/decor_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/qc_decoration"
         android:layout_marginBottom="-150dp"
-        android:scaleType="fitXY"
-        />
-
+        android:scaleType="fitXY" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="100sp"
-        android:layout_height="100sp"
         android:id="@+id/hs_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:background="@drawable/white_circle_background"
         android:layout_gravity="center_horizontal"
-        android:elevation="50dp"
-        android:layout_marginBottom="10sp"
-        android:translationZ="4dp"/>
+        android:elevation="8dp"
+        android:layout_marginBottom="10dp"
+        android:translationZ="4dp" />
 
     <TextView
         android:id="@+id/hs_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
-        android:textSize="27sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_gravity="center_horizontal"
@@ -43,75 +41,80 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mô tả về bản thân"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="italic"
         android:textColor="@color/black"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="15sp"
+        android:layout_marginBottom="12dp"
         tools:ignore="HardcodedText" />
 
+    <!-- Button bar -->
     <LinearLayout
-        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="12dp">
 
         <Button
             android:id="@+id/hs_setting"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:elevation="10dp"
-            android:translationZ="4dp"
-            android:text="Cài đặt"
             android:gravity="center"
-            android:padding="15dp"
-            android:paddingLeft="20sp"
+            android:padding="8dp"
+            android:drawableTop="@drawable/settings_24"
             android:background="@drawable/purple_circle_background"
+            android:elevation="6dp"
+            android:translationZ="2dp"
+            tools:ignore="HardcodedText" />
 
-            android:drawableTop="@drawable/settings_24"/>
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/hs_profile"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:elevation="10dp"
-            android:translationZ="4dp"
             android:gravity="center"
-            android:padding="15dp"
+            android:padding="8dp"
             android:drawableTop="@drawable/edit"
             android:background="@drawable/purple_circle_background"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-          />
+            android:elevation="6dp"
+            android:translationZ="2dp" />
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/hs_search"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:elevation="10dp"
-            android:translationZ="4dp"
             android:gravity="center"
-            android:padding="15dp"
+            android:padding="8dp"
             android:drawableTop="@drawable/search_24"
             android:background="@drawable/purple_circle_background"
-            android:layout_marginEnd="10dp"
-            />
+            android:elevation="6dp"
+            android:translationZ="2dp" />
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/hs_signout"
-            android:layout_width="56dp"
-            android:layout_height="match_parent"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:padding="8dp"
             android:drawableTop="@drawable/home"
             android:background="@drawable/purple_circle_background"
-            android:gravity="center"
-            android:elevation="10dp"
-            android:translationZ="4dp"
-            android:padding="15dp"
-           />
+            android:elevation="6dp"
+            android:translationZ="2dp" />
     </LinearLayout>
+
+
     <!-- Danh sách cuộc trò chuyện gần đây -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_recent_chats"

@@ -9,9 +9,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:padding="16dp"
-        android:text="Tìm kiếm"
-        android:textSize="18sp"
+        android:text="Tìm kiếm người dùng"
+        android:textColor="@color/black"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <!-- Thanh tìm kiếm -->
@@ -21,7 +23,8 @@
         android:layout_height="wrap_content"
         android:queryHint="Tìm kiếm"
         android:iconifiedByDefault="false"
-        android:padding="8dp" />
+        android:background="@drawable/search_view_background" />
+
 
     <!-- Danh sách người dùng tìm kiếm -->
     <ListView
