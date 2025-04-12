@@ -44,7 +44,7 @@ public class HomeScreenActivity extends AppCompatActivity {
 
         homescreen_editProfile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
 
-        homescreen_settings.setOnClickListener(v -> Toast.makeText(HomeScreenActivity.this, "Tính năng này đang phát triển", Toast.LENGTH_SHORT).show());
+        homescreen_settings.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
     }
 
 
@@ -109,6 +109,8 @@ public class HomeScreenActivity extends AppCompatActivity {
         startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
         finish();
     }
+
+
 
 
 }

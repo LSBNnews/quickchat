@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Base colors -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <!-- Light Theme Colors -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="text_primary_light">#000000</color>
+    <color name="text_secondary_light">#616161</color>
+
+    <!-- Dark Theme Colors -->
+    <color name="background_dark">#121212</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#E0E0E0</color>
 </resources>
