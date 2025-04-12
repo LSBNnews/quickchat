@@ -33,6 +33,7 @@
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".SearchActivity" />
     </application>
 
 </manifest>

@@ -27,7 +27,7 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private CircleImageView homescreen_image;
     private TextView homescreen_username, homescreen_description;
-    private Button homescreen_signout, homescreen_editProfile, homescreen_settings;
+    private Button homescreen_signout, homescreen_editProfile, homescreen_settings, homescreen_search;
     DatabaseReference reference;
     FirebaseAuth auth;
     FirebaseUser currentUser;
@@ -45,10 +45,9 @@ public class HomeScreenActivity extends AppCompatActivity {
         homescreen_editProfile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
 
         homescreen_settings.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
+
+        homescreen_search.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SearchActivity.class)));
     }
-
-
-
 
 
     @Override
@@ -64,6 +63,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference().child("users");
         currentUser = auth.getCurrentUser();
         homescreen_image = findViewById(R.id.hs_image);
+        homescreen_search = findViewById(R.id.hs_search);
         homescreen_username = findViewById(R.id.hs_username);
         homescreen_description = findViewById(R.id.hs_description);
         homescreen_signout = findViewById(R.id.hs_signout);
