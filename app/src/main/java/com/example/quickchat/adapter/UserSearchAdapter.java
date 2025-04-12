@@ -1,4 +1,4 @@
-package com.example.quickchat;
+package com.example.quickchat.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.example.quickchat.R;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;

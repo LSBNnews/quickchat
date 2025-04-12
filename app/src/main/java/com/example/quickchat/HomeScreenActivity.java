@@ -2,35 +2,45 @@ package com.example.quickchat;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+import com.example.quickchat.adapter.RecentChatAdapter;
+import com.example.quickchat.model.RecentChat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class HomeScreenActivity extends AppCompatActivity {
 
-    private CircleImageView homescreen_image;
-    private TextView homescreen_username, homescreen_description;
-    private Button homescreen_signout, homescreen_editProfile, homescreen_settings, homescreen_search;
-    DatabaseReference reference;
-    FirebaseAuth auth;
-    FirebaseUser currentUser;
+    private RecyclerView recyclerRecentChats;
+    private RecentChatAdapter recentChatAdapter;
+    private List<RecentChat> recentChats;
+
+    private DatabaseReference reference;
+    private FirebaseAuth auth;
+    private FirebaseUser currentUser;
+
+    private Button hs_setting, hs_profile, hs_signout, hs_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,37 +48,41 @@ public class HomeScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_screen);
 
         initializeFields();
+
+        // Thiết lập thông tin người dùng
         displayUserInfo();
 
-        homescreen_signout.setOnClickListener(v -> signout());
+        // Thiết lập danh sách cuộc trò chuyện gần đây
+        setupRecentChats();
 
-        homescreen_editProfile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
+        // Xử lý nút "Tìm kiếm"
+        hs_search.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SearchActivity.class)));
 
-        homescreen_settings.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
+        // Xử lý nút "Đăng xuất"
+        hs_signout.setOnClickListener(v -> signout());
 
-        homescreen_search.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SearchActivity.class)));
+        // Chuyển đến trang chỉnh sửa profile
+        hs_profile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
+
+        // Chuyển đến trang cài đặt
+        hs_setting.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(currentUser == null) {
-            startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
-            finish();
-        }
-    }
     private void initializeFields() {
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().child("users");
         currentUser = auth.getCurrentUser();
-        homescreen_image = findViewById(R.id.hs_image);
-        homescreen_search = findViewById(R.id.hs_search);
-        homescreen_username = findViewById(R.id.hs_username);
-        homescreen_description = findViewById(R.id.hs_description);
-        homescreen_signout = findViewById(R.id.hs_signout);
-        homescreen_editProfile = findViewById(R.id.hs_profile);
-        homescreen_settings = findViewById(R.id.hs_setting);
+        recyclerRecentChats = findViewById(R.id.recycler_recent_chats);
+
+        recentChats = new ArrayList<>();
+        recentChatAdapter = new RecentChatAdapter(recentChats);
+        recyclerRecentChats.setLayoutManager(new LinearLayoutManager(this));
+        recyclerRecentChats.setAdapter(recentChatAdapter);
+
+        hs_setting = findViewById(R.id.hs_setting);
+        hs_profile = findViewById(R.id.hs_profile);
+        hs_signout = findViewById(R.id.hs_signout);
+        hs_search = findViewById(R.id.hs_search);
     }
 
     private void displayUserInfo() {
@@ -82,35 +96,74 @@ public class HomeScreenActivity extends AppCompatActivity {
 
                     if (data.hasChild("description")) {
                         String retrieveDescription = data.child("description").getValue(String.class);
-                        homescreen_description.setText(retrieveDescription);
+                        TextView descriptionTextView = findViewById(R.id.hs_description);
+                        descriptionTextView.setText(retrieveDescription);
                     }
 
-                    homescreen_username.setText(retrieveUsername);
-                    if (retrieveImage.equals("default")) {
-                        homescreen_image.setImageResource(R.mipmap.ic_launcher);
-                    }
+                    TextView usernameTextView = findViewById(R.id.hs_username);
+                    usernameTextView.setText(retrieveUsername);
+
+                    ImageView imageView = findViewById(R.id.hs_image);
+                    Glide.with(HomeScreenActivity.this)
+                            .load(retrieveImage.equals("default") ? R.mipmap.ic_launcher : retrieveImage)
+                            .into(imageView);
                 } else {
                     Toast.makeText(HomeScreenActivity.this, "Không thể lấy thông tin người dùng", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
+                    finish();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.e("HomeScreenActivity", "Lỗi khi đọc dữ liệu người dùng: " + error.getMessage());
             }
         });
+    }
 
+    private void setupRecentChats() {
+        String currentUserId = auth.getCurrentUser().getUid();
+        DatabaseReference recentChatsRef = FirebaseDatabase.getInstance().getReference()
+                .child("recentChats")
+                .child(currentUserId);
+
+        recentChatsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                recentChats.clear();
+                for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
+                    String chatId = chatSnapshot.getKey();
+                    String lastMessage = chatSnapshot.child("lastMessage").getValue(String.class);
+                    long timestamp = chatSnapshot.child("timestamp").getValue(Long.class);
+                    List<String> participants = chatSnapshot.child("participants").getValue(List.class);
+
+                    RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants);
+                    recentChats.add(recentChat);
+                }
+
+                // Sắp xếp danh sách theo thời gian mới nhất
+                Collections.sort(recentChats, new Comparator<RecentChat>() {
+                    @Override
+                    public int compare(RecentChat c1, RecentChat c2) {
+                        return Long.compare(c2.timestamp, c1.timestamp);
+                    }
+                });
+
+                // Cập nhật RecyclerView
+                recentChatAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("HomeScreenActivity", "Lỗi khi lấy danh sách cuộc trò chuyện gần đây: " + databaseError.getMessage());
+            }
+        });
     }
 
     private void signout() {
-        auth.signOut();
+        FirebaseAuth.getInstance().signOut();
         Toast.makeText(HomeScreenActivity.this, "Bạn đã đăng xuất khỏi ứng dụng", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
         finish();
     }
-
-
-
-
 }

@@ -2,6 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#e0e0e0</color>
+    <color name="light_gray">#f4eeee</color>
+    <color name="purple">#9900ff</color>
+
     <!-- Base colors -->
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
