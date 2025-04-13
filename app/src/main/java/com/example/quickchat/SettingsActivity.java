@@ -52,12 +52,24 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Load saved settings from SharedPreferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String savedTheme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
+
+        // Apply default theme (Light Mode)
+        if (savedTheme.equals(THEME_DARK)) {
+            setTheme(R.style.Theme_QuickChat_Dark);
+        } else {
+            setTheme(R.style.Theme_QuickChat_Light);
+        }
+
         setContentView(R.layout.activity_settings);
 
         // Initialize UI elements
         initializeFields();
 
-        // Load saved settings from SharedPreferences
+        // Load saved settings
         loadSavedSettings();
 
         // Handle language selection
@@ -101,8 +113,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSavedSettings() {
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedLanguage = sharedPreferences.getString(PREF_LANGUAGE, LANGUAGE_ENGLISH);
+        // Default language is Vietnamese, default theme is Light Mode
+        String savedLanguage = sharedPreferences.getString(PREF_LANGUAGE, LANGUAGE_VIETNAMESE);
         String savedTheme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
 
         // Update UI based on saved settings
@@ -147,13 +159,13 @@ public class SettingsActivity extends AppCompatActivity {
         String selectedLanguage = languageVietnameseCheckbox.isChecked() ? LANGUAGE_VIETNAMESE : LANGUAGE_ENGLISH;
         String selectedTheme = themeLightCheckbox.isChecked() ? THEME_LIGHT : THEME_DARK;
 
-        // Lưu
+        // Save settings to SharedPreferences
         editor = sharedPreferences.edit();
         editor.putString(PREF_LANGUAGE, selectedLanguage);
         editor.putString(PREF_THEME, selectedTheme);
         editor.apply();
 
-        // Áp dụng cài đặt mới
+        // Apply new settings
         updateLocale(selectedLanguage);
         applyTheme(selectedTheme);
 
@@ -166,6 +178,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void updateLocale(String languageCode) {
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
+
         Resources resources = getResources();
         Configuration config = resources.getConfiguration();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -183,6 +196,4 @@ public class SettingsActivity extends AppCompatActivity {
             setTheme(R.style.Theme_QuickChat_Light);
         }
     }
-
-
 }
