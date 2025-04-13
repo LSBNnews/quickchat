@@ -75,15 +75,27 @@ public class HomeScreenActivity extends AppCompatActivity {
         recyclerRecentChats.setOnItemClickListener((parent, view, position, id) -> {
             RecentChat recentChat = recentChats.get(position);
             String chatId = recentChat.getChatId();
-
             // Lấy thông tin người dùng khác từ danh sách participants
             String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             String otherUserId = recentChat.getParticipants().get(0).equals(currentUserId) ? recentChat.getParticipants().get(1) : recentChat.getParticipants().get(0);
 
-            Intent intent = new Intent(HomeScreenActivity.this, ChatActivity.class);
-            intent.putExtra("targetUserId", otherUserId);
-            intent.putExtra("chatId", chatId);
-            startActivity(intent);
+            // Lấy tên người dùng khác từ Firebase
+            DatabaseReference userRef = reference.child(otherUserId);
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String targetUsername = dataSnapshot.child("username").getValue(String.class);
+                    Intent intent = new Intent(HomeScreenActivity.this, ChatActivity.class);
+                    intent.putExtra("targetUserId", otherUserId);
+                    intent.putExtra("targetUsername", targetUsername);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("HomeScreenActivity", "Lỗi khi lấy thông tin người dùng: " + databaseError.getMessage());
+                }
+            });
         });
     }
 

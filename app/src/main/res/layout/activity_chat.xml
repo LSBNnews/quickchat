@@ -3,24 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
-
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/chat_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/purple">
-
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/chat_user_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:src="@mipmap/ic_launcher"
-
-            />
-
+            android:src="@mipmap/ic_launcher" />
         <TextView
             android:id="@+id/chat_user_name"
             android:layout_width="wrap_content"
@@ -33,7 +28,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
-
     <!-- Danh sách tin nhắn -->
     <ListView
         android:id="@+id/chat_list"
@@ -43,7 +37,6 @@
         android:layout_above="@id/chat_layout"
         android:divider="@null"
         android:dividerHeight="0dp" />
-
     <!-- Layout nhập tin nhắn -->
     <LinearLayout
         android:id="@+id/chat_layout"
@@ -53,7 +46,6 @@
         android:layout_alignParentBottom="true"
         android:padding="8dp"
         android:background="@color/white">
-
         <EditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"
@@ -62,7 +54,6 @@
             android:hint="Nhập tin nhắn..."
             android:padding="12dp"
             android:background="@drawable/chat_input_background" />
-
         <Button
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
