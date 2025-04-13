@@ -25,6 +25,15 @@
             android:text="This is a sent message"
             android:textColor="@color/black"
             android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/sent_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:34 PM, 01/01/2023"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
     </LinearLayout>
 
     <!-- Tin nhắn nhận -->
@@ -48,5 +57,14 @@
             android:text="This is a received message"
             android:textColor="@color/black"
             android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/received_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:34 PM, 01/01/2023"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp" />
     </LinearLayout>
 </LinearLayout>
