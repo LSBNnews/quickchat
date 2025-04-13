@@ -5,15 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.quickchat.adapter.RecentChatAdapter;
@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.List;
 
 public class HomeScreenActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerRecentChats;
+    private ListView recyclerRecentChats;
     private RecentChatAdapter recentChatAdapter;
     private List<RecentChat> recentChats;
 
@@ -69,6 +70,21 @@ public class HomeScreenActivity extends AppCompatActivity {
 
         // Chuyển đến trang cài đặt
         hs_setting.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
+
+        // Xử lý sự kiện click vào item trong danh sách cuộc trò chuyện gần đây
+        recyclerRecentChats.setOnItemClickListener((parent, view, position, id) -> {
+            RecentChat recentChat = recentChats.get(position);
+            String chatId = recentChat.getChatId();
+
+            // Lấy thông tin người dùng khác từ danh sách participants
+            String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String otherUserId = recentChat.getParticipants().get(0).equals(currentUserId) ? recentChat.getParticipants().get(1) : recentChat.getParticipants().get(0);
+
+            Intent intent = new Intent(HomeScreenActivity.this, ChatActivity.class);
+            intent.putExtra("targetUserId", otherUserId);
+            intent.putExtra("chatId", chatId);
+            startActivity(intent);
+        });
     }
 
     private void initializeFields() {
@@ -78,8 +94,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         recyclerRecentChats = findViewById(R.id.recycler_recent_chats);
 
         recentChats = new ArrayList<>();
-        recentChatAdapter = new RecentChatAdapter(recentChats);
-        recyclerRecentChats.setLayoutManager(new LinearLayoutManager(this));
+        recentChatAdapter = new RecentChatAdapter(this, recentChats);
         recyclerRecentChats.setAdapter(recentChatAdapter);
 
         hs_setting = findViewById(R.id.hs_setting);
@@ -146,7 +161,9 @@ public class HomeScreenActivity extends AppCompatActivity {
                     String chatId = chatSnapshot.getKey();
                     String lastMessage = chatSnapshot.child("lastMessage").getValue(String.class);
                     long timestamp = chatSnapshot.child("timestamp").getValue(Long.class);
-                    List<String> participants = chatSnapshot.child("participants").getValue(List.class);
+                    GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                    List<String> participants = chatSnapshot.child("participants").getValue(t);
+
 
                     RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants);
                     recentChats.add(recentChat);
@@ -156,11 +173,11 @@ public class HomeScreenActivity extends AppCompatActivity {
                 Collections.sort(recentChats, new Comparator<RecentChat>() {
                     @Override
                     public int compare(RecentChat c1, RecentChat c2) {
-                        return Long.compare(c2.timestamp, c1.timestamp);
+                        return Long.compare(c2.getTimestamp(), c1.getTimestamp());
                     }
                 });
 
-                // Cập nhật RecyclerView
+                // Cập nhật ListView
                 recentChatAdapter.notifyDataSetChanged();
             }
 

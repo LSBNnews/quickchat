@@ -24,7 +24,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
@@ -128,6 +127,12 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 messageAdapter.notifyDataSetChanged();
                 chatList.setSelection(messages.size() - 1); // Cuộn xuống cuối danh sách tin nhắn
+
+                // Cập nhật recentChats khi nhận tin nhắn mới
+                if (!messages.isEmpty()) {
+                    Message lastMessage = messages.get(messages.size() - 1);
+                    updateRecentChats(chatId, lastMessage.getContent(), ServerValue.TIMESTAMP);
+                }
             }
 
             @Override
@@ -166,7 +171,10 @@ public class ChatActivity extends AppCompatActivity {
             DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
             String messageId = chatRef.push().getKey();
 
-            Message message = new Message(currentUserId, messageContent, System.currentTimeMillis());
+            // Sử dụng một timestamp tạm thời
+            long currentTime = System.currentTimeMillis();
+
+            Message message = new Message(currentUserId, messageContent, currentTime);
 
             Map<String, Object> messageData = new HashMap<>();
             messageData.put(messageId, message);
@@ -174,7 +182,7 @@ public class ChatActivity extends AppCompatActivity {
             chatRef.updateChildren(messageData).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     chatInput.setText("");
-                    updateRecentChats(chatId, messageContent, System.currentTimeMillis());
+                    updateRecentChats(chatId, messageContent, ServerValue.TIMESTAMP); // Cập nhật recentChats
                 } else {
                     Toast.makeText(ChatActivity.this, "Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
                 }
@@ -182,7 +190,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void updateRecentChats(String chatId, String lastMessage, long timestamp) {
+    private void updateRecentChats(String chatId, String lastMessage, Object timestamp) {
         String currentUserId = auth.getCurrentUser().getUid();
 
         DatabaseReference recentChatsRef = reference.child("recentChats").child(currentUserId).child(chatId);
