@@ -50,6 +50,15 @@
         android:padding="8dp"
         android:background="@color/white">
 
+        <Button
+            android:id="@+id/chat_map_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:background="@drawable/location"
+            android:textColor="@color/white"
+            android:contentDescription="send_location" /> <!-- Thêm contentDescription -->
+
         <EditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"
@@ -59,13 +68,14 @@
             android:padding="12dp"
             android:background="@drawable/chat_input_background"
             android:maxLines="1"
-        />
+            />
 
         <Button
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Gửi"
+            android:textStyle="bold"
             android:padding="12dp"
             android:background="@drawable/purple_button_background"
             android:textColor="@color/white"
