@@ -1,12 +1,12 @@
 package com.example.quickchat;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,6 +36,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private DatabaseReference reference;
     private FirebaseAuth auth;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,11 @@ public class SearchActivity extends AppCompatActivity {
         userSearchAdapter = new UserSearchAdapter(this, searchResults);
         userList.setAdapter(userSearchAdapter);
         auth = FirebaseAuth.getInstance();
+
+        // Khởi tạo ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang tìm kiếm người dùng...");
+        progressDialog.setCancelable(false);
     }
 
     private void setupSearchView() {
@@ -67,7 +73,15 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchUsers(newText);
+                if (newText.isEmpty()) {
+                    // Xóa danh sách kết quả nếu thanh tìm kiếm trống
+                    searchResults.clear();
+                    userSearchAdapter.notifyDataSetChanged();
+                } else {
+                    // Hiển thị ProgressDialog
+                    progressDialog.show();
+                    searchUsers(newText);
+                }
                 return true;
             }
         });
@@ -199,12 +213,16 @@ public class SearchActivity extends AppCompatActivity {
                     searchResults.add(userSnapshot);
                 }
                 userSearchAdapter.notifyDataSetChanged();
+                // Ẩn ProgressDialog sau khi hoàn thành
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("SearchActivity", "Lỗi khi tìm kiếm người dùng: " + databaseError.getMessage());
                 Toast.makeText(SearchActivity.this, "Lỗi khi tìm kiếm người dùng", Toast.LENGTH_SHORT).show();
+                // Ẩn ProgressDialog nếu có lỗi
+                progressDialog.dismiss();
             }
         });
     }

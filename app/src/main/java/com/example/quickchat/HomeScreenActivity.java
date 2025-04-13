@@ -1,5 +1,6 @@
 package com.example.quickchat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,6 +43,8 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private Button hs_setting, hs_profile, hs_signout, hs_search;
 
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,12 @@ public class HomeScreenActivity extends AppCompatActivity {
         hs_profile = findViewById(R.id.hs_profile);
         hs_signout = findViewById(R.id.hs_signout);
         hs_search = findViewById(R.id.hs_search);
+
+        // Khởi tạo ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang tải thông tin...");
+        progressDialog.setCancelable(false);
+        progressDialog.show(); // Hiển thị ProgressDialog ngay khi bắt đầu
     }
 
     private void displayUserInfo() {
@@ -112,11 +121,13 @@ public class HomeScreenActivity extends AppCompatActivity {
                     startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
                     finish();
                 }
+                progressDialog.dismiss(); // Ẩn ProgressDialog sau khi tải xong thông tin người dùng
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("HomeScreenActivity", "Lỗi khi đọc dữ liệu người dùng: " + error.getMessage());
+                progressDialog.dismiss(); // Ẩn ProgressDialog nếu có lỗi
             }
         });
     }
