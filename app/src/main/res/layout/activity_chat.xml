@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
+
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/chat_toolbar"
@@ -28,6 +29,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
+
     <!-- Danh sách tin nhắn -->
     <ListView
         android:id="@+id/chat_list"
@@ -37,6 +39,7 @@
         android:layout_above="@id/chat_layout"
         android:divider="@null"
         android:dividerHeight="0dp" />
+
     <!-- Layout nhập tin nhắn -->
     <LinearLayout
         android:id="@+id/chat_layout"
@@ -46,6 +49,7 @@
         android:layout_alignParentBottom="true"
         android:padding="8dp"
         android:background="@color/white">
+
         <EditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"
@@ -53,7 +57,10 @@
             android:layout_weight="1"
             android:hint="Nhập tin nhắn..."
             android:padding="12dp"
-            android:background="@drawable/chat_input_background" />
+            android:background="@drawable/chat_input_background"
+            android:maxLines="1"
+        />
+
         <Button
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
