@@ -25,7 +25,16 @@
         android:iconifiedByDefault="false"
         android:background="@drawable/search_view_background" />
 
-
+    <ProgressBar
+        android:id="@+id/loading_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:indeterminate="true"
+        android:layout_gravity="center"
+        />
     <!-- Danh sách người dùng tìm kiếm -->
     <ListView
         android:id="@+id/user_list"

@@ -1,13 +1,14 @@
 package com.example.quickchat;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
-import com.bumptech.glide.Glide;
 import com.example.quickchat.adapter.UserSearchAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,12 +31,15 @@ public class SearchActivity extends AppCompatActivity {
 
     private SearchView searchView;
     private ListView userList;
+    private ProgressBar loadingBar;
     private UserSearchAdapter userSearchAdapter;
     private ArrayList<DataSnapshot> searchResults;
 
     private DatabaseReference reference;
     private FirebaseAuth auth;
-    private ProgressDialog progressDialog;
+
+    private final Handler searchHandler = new Handler();
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,6 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         initializeFields();
-
-        // Thiết lập thanh tìm kiếm
         setupSearchView();
     }
 
@@ -53,15 +54,13 @@ public class SearchActivity extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference().child("users");
         searchView = findViewById(R.id.search_view);
         userList = findViewById(R.id.user_list);
+        loadingBar = findViewById(R.id.loading_bar); // <-- Add a ProgressBar with this ID in layout
         searchResults = new ArrayList<>();
         userSearchAdapter = new UserSearchAdapter(this, searchResults);
         userList.setAdapter(userSearchAdapter);
         auth = FirebaseAuth.getInstance();
 
-        // Khởi tạo ProgressDialog
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Đang tìm kiếm người dùng...");
-        progressDialog.setCancelable(false);
+        loadingBar.setVisibility(View.GONE);
     }
 
     private void setupSearchView() {
@@ -73,47 +72,48 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+
                 if (newText.isEmpty()) {
-                    // Xóa danh sách kết quả nếu thanh tìm kiếm trống
                     searchResults.clear();
                     userSearchAdapter.notifyDataSetChanged();
+                    loadingBar.setVisibility(View.GONE);
                 } else {
-                    // Hiển thị ProgressDialog
-                    progressDialog.show();
-                    searchUsers(newText);
+                    searchRunnable = () -> {
+                        loadingBar.setVisibility(View.VISIBLE);
+                        searchUsers(newText);
+                    };
+                    searchHandler.postDelayed(searchRunnable, 500); // Debounce 500ms
                 }
+
                 return true;
             }
         });
 
-        userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                DataSnapshot selectedUser = searchResults.get(position);
-                String targetUserId = selectedUser.getKey();
-                String targetUsername = selectedUser.child("username").getValue(String.class);
+        userList.setOnItemClickListener((parent, view, position, id) -> {
+            DataSnapshot selectedUser = searchResults.get(position);
+            String targetUserId = selectedUser.getKey();
+            String targetUsername = selectedUser.child("username").getValue(String.class);
 
-                // Kiểm tra xem người dùng có bị chặn hay không
-                DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
-                        .child("blockedUsers")
-                        .child(auth.getCurrentUser().getUid())
-                        .child(targetUserId);
+            DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
+                    .child("blockedUsers")
+                    .child(auth.getCurrentUser().getUid())
+                    .child(targetUserId);
 
-                blockedUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean isBlocked = dataSnapshot.exists() && dataSnapshot.getValue(Boolean.class);
+            blockedUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    boolean isBlocked = dataSnapshot.exists() && dataSnapshot.getValue(Boolean.class);
+                    showUserActionDialog(targetUserId, targetUsername, isBlocked);
+                }
 
-                        // Hiển thị dialog tùy theo trạng thái chặn
-                        showUserActionDialog(targetUserId, targetUsername, isBlocked);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("SearchActivity", "Lỗi khi kiểm tra trạng thái chặn: " + databaseError.getMessage());
-                    }
-                });
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("SearchActivity", "Lỗi khi kiểm tra trạng thái chặn: " + databaseError.getMessage());
+                }
+            });
         });
     }
 
@@ -122,76 +122,46 @@ public class SearchActivity extends AppCompatActivity {
         builder.setTitle(targetUsername);
 
         if (isBlocked) {
-            // Người dùng đã bị chặn
             builder.setMessage("Bạn đã chặn người dùng này")
-                    .setPositiveButton("Bỏ chặn", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Xử lý bỏ chặn
-                            unblockUser(targetUserId);
-                        }
-                    })
-                    .setNegativeButton("Đóng", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    .setPositiveButton("Bỏ chặn", (dialog, which) -> unblockUser(targetUserId))
+                    .setNegativeButton("Đóng", (dialog, which) -> dialog.dismiss());
         } else {
-            // Người dùng chưa bị chặn
-            builder.setPositiveButton("Nhắn tin", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Mở ChatActivity
-                            openChatActivity(targetUserId, targetUsername);
-                        }
-                    })
-                    .setNegativeButton("Chặn", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Chặn người dùng
-                            blockUser(targetUserId);
-                        }
-                    })
-                    .setNeutralButton("Đóng", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+            builder.setPositiveButton("Nhắn tin", (dialog, which) -> openChatActivity(targetUserId, targetUsername))
+                    .setNegativeButton("Chặn", (dialog, which) -> blockUser(targetUserId))
+                    .setNeutralButton("Đóng", (dialog, which) -> dialog.dismiss());
         }
 
         builder.show();
     }
 
     private void blockUser(String targetUserId) {
-        DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
+        FirebaseDatabase.getInstance().getReference()
                 .child("blockedUsers")
                 .child(auth.getCurrentUser().getUid())
-                .child(targetUserId);
-
-        blockedUsersRef.setValue(true).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(SearchActivity.this, "Đã chặn người dùng thành công", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(SearchActivity.this, "Lỗi khi chặn người dùng", Toast.LENGTH_SHORT).show();
-            }
-        });
+                .child(targetUserId)
+                .setValue(true)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(SearchActivity.this, "Đã chặn người dùng thành công", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SearchActivity.this, "Lỗi khi chặn người dùng", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void unblockUser(String targetUserId) {
-        DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
+        FirebaseDatabase.getInstance().getReference()
                 .child("blockedUsers")
                 .child(auth.getCurrentUser().getUid())
-                .child(targetUserId);
-
-        blockedUsersRef.removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(SearchActivity.this, "Đã bỏ chặn người dùng thành công", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(SearchActivity.this, "Lỗi khi bỏ chặn người dùng", Toast.LENGTH_SHORT).show();
-            }
-        });
+                .child(targetUserId)
+                .removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(SearchActivity.this, "Đã bỏ chặn người dùng thành công", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SearchActivity.this, "Lỗi khi bỏ chặn người dùng", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void openChatActivity(String targetUserId, String targetUsername) {
@@ -204,25 +174,27 @@ public class SearchActivity extends AppCompatActivity {
     private void searchUsers(String query) {
         searchResults.clear();
 
-        // Sửa trường truy vấn từ "name" thành "username"
+        String currentUserId = auth.getCurrentUser().getUid();
         Query searchQuery = reference.orderByChild("username").startAt(query).endAt(query + "\uf8ff");
+
         searchQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    searchResults.add(userSnapshot);
+                    String userId = userSnapshot.getKey();
+                    if (userId != null && !userId.equals(currentUserId)) {
+                        searchResults.add(userSnapshot);
+                    }
                 }
                 userSearchAdapter.notifyDataSetChanged();
-                // Ẩn ProgressDialog sau khi hoàn thành
-                progressDialog.dismiss();
+                loadingBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("SearchActivity", "Lỗi khi tìm kiếm người dùng: " + databaseError.getMessage());
                 Toast.makeText(SearchActivity.this, "Lỗi khi tìm kiếm người dùng", Toast.LENGTH_SHORT).show();
-                // Ẩn ProgressDialog nếu có lỗi
-                progressDialog.dismiss();
+                loadingBar.setVisibility(View.GONE);
             }
         });
     }
