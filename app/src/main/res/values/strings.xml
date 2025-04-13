@@ -3,6 +3,8 @@
     <string name="title_activity_home_screen">HomeScreen</string>
     <string name="client_id">645669513344-hd7s63vb3avjrcco7pv018k1tn1g96e7.apps.googleusercontent.com</string>
     <string name="web_id">AIzaSyDuMZrOasetIoPMmm7ixDjIxdeitwbFfrI</string>
+    <string name="default_notification_channel_id">Quick Chat</string>
+    <string name="fcm_message">Bạn vừa nhận được tin nhắn mới</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

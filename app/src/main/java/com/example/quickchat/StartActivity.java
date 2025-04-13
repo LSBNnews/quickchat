@@ -3,12 +3,15 @@ package com.example.quickchat;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 
 public class StartActivity extends AppCompatActivity {
@@ -27,6 +30,7 @@ public class StartActivity extends AppCompatActivity {
         signupButton.setOnClickListener(v -> startActivity(new Intent(StartActivity.this, SignUpActivity.class)));
 
         loginButton.setOnClickListener(v -> startActivity(new Intent(StartActivity.this, LoginActivity.class)));
+        getFCMToken();
     }
 
 
@@ -45,4 +49,14 @@ public class StartActivity extends AppCompatActivity {
         signupButton = findViewById(R.id.signUpButton);
         loginButton = findViewById(R.id.SignInButton);
     }
+
+    void getFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+           if(task.isSuccessful()) {
+               String token = task.getResult();
+               Log.i("FCM token: ", token);
+           }
+        });
+    }
+
 }
