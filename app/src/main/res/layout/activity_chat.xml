@@ -9,16 +9,14 @@
         android:id="@+id/chat_toolbar"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@color/purple"
-        android:elevation="4dp"
-        >
+        android:background="@color/purple">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/chat_user_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
             android:src="@mipmap/ic_launcher"
 
             />
@@ -27,9 +25,9 @@
             android:id="@+id/chat_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/chat_user_image"
-            android:layout_marginStart="16dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/chat_user_image"
             android:text="Username"
             android:textColor="@color/white"
             android:textSize="18sp"

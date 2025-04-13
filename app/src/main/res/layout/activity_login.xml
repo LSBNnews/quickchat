@@ -102,6 +102,24 @@
             android:elevation="20dp"
             android:translationZ="4dp"
            />
+        <Button
+            android:id="@+id/google_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="48dp"
+            android:text="Đăng nhập bằng Google"
+            android:minWidth="250dp"
+            android:maxWidth="300dp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:background="@drawable/black_stroke_button"
+            android:textColor="@color/black"
+
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center"
+            android:elevation="20dp"
+            android:translationZ="4dp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
