@@ -10,34 +10,30 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-
 import com.example.quickchat.adapter.UserSearchAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
-
     private SearchView searchView;
     private ListView userList;
     private ProgressBar loadingBar;
     private UserSearchAdapter userSearchAdapter;
     private ArrayList<DataSnapshot> searchResults;
-
     private DatabaseReference reference;
     private FirebaseAuth auth;
-
     private final Handler searchHandler = new Handler();
     private Runnable searchRunnable;
 
@@ -45,7 +41,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
         initializeFields();
         setupSearchView();
     }
@@ -54,12 +49,11 @@ public class SearchActivity extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference().child("users");
         searchView = findViewById(R.id.search_view);
         userList = findViewById(R.id.user_list);
-        loadingBar = findViewById(R.id.loading_bar); // <-- Add a ProgressBar with this ID in layout
+        loadingBar = findViewById(R.id.loading_bar); // <-- Ensure this ProgressBar exists in your layout
         searchResults = new ArrayList<>();
         userSearchAdapter = new UserSearchAdapter(this, searchResults);
         userList.setAdapter(userSearchAdapter);
         auth = FirebaseAuth.getInstance();
-
         loadingBar.setVisibility(View.GONE);
     }
 
@@ -75,7 +69,6 @@ public class SearchActivity extends AppCompatActivity {
                 if (searchRunnable != null) {
                     searchHandler.removeCallbacks(searchRunnable);
                 }
-
                 if (newText.isEmpty()) {
                     searchResults.clear();
                     userSearchAdapter.notifyDataSetChanged();
@@ -87,7 +80,6 @@ public class SearchActivity extends AppCompatActivity {
                     };
                     searchHandler.postDelayed(searchRunnable, 500); // Debounce 500ms
                 }
-
                 return true;
             }
         });
@@ -96,12 +88,10 @@ public class SearchActivity extends AppCompatActivity {
             DataSnapshot selectedUser = searchResults.get(position);
             String targetUserId = selectedUser.getKey();
             String targetUsername = selectedUser.child("username").getValue(String.class);
-
             DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
                     .child("blockedUsers")
                     .child(auth.getCurrentUser().getUid())
                     .child(targetUserId);
-
             blockedUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -120,7 +110,6 @@ public class SearchActivity extends AppCompatActivity {
     private void showUserActionDialog(final String targetUserId, final String targetUsername, boolean isBlocked) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(targetUsername);
-
         if (isBlocked) {
             builder.setMessage("Bạn đã chặn người dùng này")
                     .setPositiveButton("Bỏ chặn", (dialog, which) -> unblockUser(targetUserId))
@@ -130,19 +119,22 @@ public class SearchActivity extends AppCompatActivity {
                     .setNegativeButton("Chặn", (dialog, which) -> blockUser(targetUserId))
                     .setNeutralButton("Đóng", (dialog, which) -> dialog.dismiss());
         }
-
         builder.show();
     }
 
     private void blockUser(String targetUserId) {
+        String currentUserId = auth.getCurrentUser().getUid();
+        // Cập nhật trạng thái chặn trong Firebase
         FirebaseDatabase.getInstance().getReference()
                 .child("blockedUsers")
-                .child(auth.getCurrentUser().getUid())
+                .child(currentUserId)
                 .child(targetUserId)
                 .setValue(true)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(SearchActivity.this, "Đã chặn người dùng thành công", Toast.LENGTH_SHORT).show();
+                        // Xóa cuộc trò chuyện gần đây liên quan
+                        deleteRecentChat(currentUserId, targetUserId);
                     } else {
                         Toast.makeText(SearchActivity.this, "Lỗi khi chặn người dùng", Toast.LENGTH_SHORT).show();
                     }
@@ -150,9 +142,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void unblockUser(String targetUserId) {
+        String currentUserId = auth.getCurrentUser().getUid();
+        // Xóa trạng thái chặn trong Firebase
         FirebaseDatabase.getInstance().getReference()
                 .child("blockedUsers")
-                .child(auth.getCurrentUser().getUid())
+                .child(currentUserId)
                 .child(targetUserId)
                 .removeValue()
                 .addOnCompleteListener(task -> {
@@ -173,10 +167,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private void searchUsers(String query) {
         searchResults.clear();
-
         String currentUserId = auth.getCurrentUser().getUid();
         Query searchQuery = reference.orderByChild("username").startAt(query).endAt(query + "\uf8ff");
-
         searchQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -195,6 +187,49 @@ public class SearchActivity extends AppCompatActivity {
                 Log.e("SearchActivity", "Lỗi khi tìm kiếm người dùng: " + databaseError.getMessage());
                 Toast.makeText(SearchActivity.this, "Lỗi khi tìm kiếm người dùng", Toast.LENGTH_SHORT).show();
                 loadingBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void deleteRecentChat(String currentUserId, String targetUserId) {
+        // Xóa cuộc trò chuyện gần đây của người dùng hiện tại
+        DatabaseReference recentChatsRef = FirebaseDatabase.getInstance().getReference()
+                .child("recentChats")
+                .child(currentUserId);
+        recentChatsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
+                    List<String> participants = chatSnapshot.child("participants").getValue(new GenericTypeIndicator<List<String>>() {});
+                    if (participants != null && participants.contains(targetUserId)) {
+                        chatSnapshot.getRef().removeValue(); // Xóa cuộc trò chuyện
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("SearchActivity", "Lỗi khi xóa cuộc trò chuyện: " + databaseError.getMessage());
+            }
+        });
+        // Xóa cuộc trò chuyện gần đây của người bị chặn (tùy chọn)
+        DatabaseReference targetRecentChatsRef = FirebaseDatabase.getInstance().getReference()
+                .child("recentChats")
+                .child(targetUserId);
+        targetRecentChatsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
+                    List<String> participants = chatSnapshot.child("participants").getValue(new GenericTypeIndicator<List<String>>() {});
+                    if (participants != null && participants.contains(currentUserId)) {
+                        chatSnapshot.getRef().removeValue(); // Xóa cuộc trò chuyện
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("SearchActivity", "Lỗi khi xóa cuộc trò chuyện: " + databaseError.getMessage());
             }
         });
     }

@@ -28,6 +28,16 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
+        <Button
+            android:id="@+id/chat_block_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:textStyle="bold"
+            android:padding="12dp"
+            android:background="@drawable/block"
+            android:textColor="@color/white"
+            android:layout_marginStart="8dp"
+            android:contentDescription="block"/>
     </androidx.appcompat.widget.Toolbar>
 
     <!-- Danh sách tin nhắn -->

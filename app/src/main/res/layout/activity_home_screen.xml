@@ -55,7 +55,19 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginBottom="12dp">
-
+        <Button
+            android:id="@+id/hs_block_user"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:drawableTop="@drawable/block"
+            android:background="@drawable/purple_circle_background"
+            android:layout_marginStart="8dp"
+            android:elevation="6dp"
+            android:translationZ="2dp"
+            tools:ignore="HardcodedText"
+            android:visibility="invisible"/>
         <Button
             android:id="@+id/hs_setting"
             android:layout_width="60dp"
@@ -67,6 +79,7 @@
             android:elevation="6dp"
             android:translationZ="2dp"
             tools:ignore="HardcodedText" />
+
 
         <Space
             android:layout_width="16dp"
