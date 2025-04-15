@@ -7,16 +7,26 @@ public class RecentChat {
     private String lastMessage;
     private long timestamp;
     private List<String> participants;
+    private String lastSenderId;
 
     public RecentChat() {
         // Default constructor required for calls to DataSnapshot.getValue(RecentChat.class)
     }
 
-    public RecentChat(String chatId, String lastMessage, long timestamp, List<String> participants) {
+    public RecentChat(String chatId, String lastMessage, long timestamp, List<String> participants, String lastSenderId) {
         this.chatId = chatId;
         this.lastMessage = lastMessage;
         this.timestamp = timestamp;
         this.participants = participants;
+        this.lastSenderId = lastSenderId;
+    }
+
+    public String getLastSenderId() {
+        return lastSenderId;
+    }
+
+    public void setLastSenderId(String lastSenderId) {
+        this.lastSenderId = lastSenderId;
     }
 
     public String getChatId() {

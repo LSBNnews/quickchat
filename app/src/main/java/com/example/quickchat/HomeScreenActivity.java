@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class HomeScreenActivity extends AppCompatActivity {
+
     private ListView recyclerRecentChats;
     private RecentChatAdapter recentChatAdapter;
     private List<RecentChat> recentChats;
@@ -183,7 +184,8 @@ public class HomeScreenActivity extends AppCompatActivity {
                     long timestamp = chatSnapshot.child("timestamp").getValue(Long.class);
                     GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
                     List<String> participants = chatSnapshot.child("participants").getValue(t);
-                    RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants);
+                    String lastSenderId = chatSnapshot.child("lastSenderId").getValue(String.class); // Đọc lastSenderId
+                    RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants, lastSenderId);
                     recentChats.add(recentChat);
                 }
                 // Sắp xếp danh sách theo thời gian mới nhất

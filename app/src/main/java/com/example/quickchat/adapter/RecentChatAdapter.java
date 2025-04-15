@@ -62,10 +62,15 @@ public class RecentChatAdapter extends BaseAdapter {
         TextView chatNameText = convertView.findViewById(R.id.rc_chat_name);
         CircleImageView chatUserImage = convertView.findViewById(R.id.rc_user_image);
 
-        lastMessageText.setText(recentChat.getLastMessage());
-
-        // Lấy thông tin người dùng khác từ danh sách participants
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String lastMessage = recentChat.getLastMessage();
+        String senderId = recentChat.getLastSenderId();
+
+        if (senderId != null && senderId.equals(currentUserId)) {
+            lastMessage = "Bạn: " + lastMessage; // Thêm tiền tố "Bạn: " nếu là tin nhắn của người dùng hiện tại
+        }
+        lastMessageText.setText(lastMessage);
+
         String otherUserId = recentChat.getParticipants().get(0).equals(currentUserId) ? recentChat.getParticipants().get(1) : recentChat.getParticipants().get(0);
 
         reference.child(otherUserId).addListenerForSingleValueEvent(new ValueEventListener() {
