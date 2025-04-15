@@ -263,7 +263,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendLocationMessage(double latitude, double longitude) {
         String mapUrl = "https://maps.google.com/?q=" + latitude + "," + longitude;
-        String messageContent = "Vị trí của tôi: <" + mapUrl + ">";
+        String messageContent = "Vị trí của tôi: " + mapUrl + "";
         String currentUserId = auth.getCurrentUser().getUid();
         DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
         String messageId = chatRef.push().getKey();
