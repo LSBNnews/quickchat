@@ -10,13 +10,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
-
-import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -49,49 +45,15 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    // Flag để tránh trigger listener khi đang cập nhật checkbox
+    private boolean isUpdatingThemeCheckboxes = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Load saved settings from SharedPreferences
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedTheme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
-
-        // Apply default theme (Light Mode)
-        if (savedTheme.equals(THEME_DARK)) {
-            setTheme(R.style.Theme_QuickChat_Dark);
-        } else {
-            setTheme(R.style.Theme_QuickChat_Light);
-        }
-
         setContentView(R.layout.activity_settings);
 
         // Initialize UI elements
-        initializeFields();
-
-        // Load saved settings
-        loadSavedSettings();
-
-        // Handle language selection
-        languageVietnameseLayout.setOnClickListener(v -> selectLanguage(LANGUAGE_VIETNAMESE));
-        languageEnglishLayout.setOnClickListener(v -> selectLanguage(LANGUAGE_ENGLISH));
-        languageVietnameseCheckbox.setOnClickListener(v -> selectLanguage(LANGUAGE_VIETNAMESE));
-        languageEnglishCheckbox.setOnClickListener(v -> selectLanguage(LANGUAGE_ENGLISH));
-
-        // Handle theme selection
-        themeLightLayout.setOnClickListener(v -> selectTheme(THEME_LIGHT));
-        themeDarkLayout.setOnClickListener(v -> selectTheme(THEME_DARK));
-        themeLightCheckbox.setOnClickListener(v -> selectTheme(THEME_LIGHT));
-        themeDarkCheckbox.setOnClickListener(v -> selectTheme(THEME_DARK));
-
-        // Handle save button click
-        saveButton.setOnClickListener(v -> saveSettings());
-
-        // Handle back button click
-        backButton.setOnClickListener(v -> startActivity(new Intent(SettingsActivity.this, HomeScreenActivity.class)));
-    }
-
-    private void initializeFields() {
         languageVietnameseLayout = findViewById(R.id.settings_language_vietnamese_layout);
         languageEnglishLayout = findViewById(R.id.settings_language_english_layout);
         languageVietnameseCheckbox = findViewById(R.id.settings_language_vietnamese_checkbox);
@@ -110,90 +72,71 @@ public class SettingsActivity extends AppCompatActivity {
 
         saveButton = findViewById(R.id.settings_save_button);
         backButton = findViewById(R.id.settings_back_button);
-    }
 
-    private void loadSavedSettings() {
-        // Default language is Vietnamese, default theme is Light Mode
-        String savedLanguage = sharedPreferences.getString(PREF_LANGUAGE, LANGUAGE_VIETNAMESE);
-        String savedTheme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
-
-        // Update UI based on saved settings
-        if (savedLanguage.equals(LANGUAGE_VIETNAMESE)) {
-            selectLanguage(LANGUAGE_VIETNAMESE);
-        } else {
-            selectLanguage(LANGUAGE_ENGLISH);
-        }
-
-        if (savedTheme.equals(THEME_LIGHT)) {
-            selectTheme(THEME_LIGHT);
-        } else {
-            selectTheme(THEME_DARK);
-        }
-    }
-
-    private void selectLanguage(String language) {
-        // Uncheck all language checkboxes
-        languageVietnameseCheckbox.setChecked(false);
-        languageEnglishCheckbox.setChecked(false);
-
-        if (language.equals(LANGUAGE_VIETNAMESE)) {
-            languageVietnameseCheckbox.setChecked(true);
-        } else {
-            languageEnglishCheckbox.setChecked(true);
-        }
-    }
-
-    private void selectTheme(String theme) {
-        // Uncheck all theme checkboxes
-        themeLightCheckbox.setChecked(false);
-        themeDarkCheckbox.setChecked(false);
-
-        if (theme.equals(THEME_LIGHT)) {
-            themeLightCheckbox.setChecked(true);
-        } else {
-            themeDarkCheckbox.setChecked(true);
-        }
-    }
-
-    private void saveSettings() {
-        String selectedLanguage = languageVietnameseCheckbox.isChecked() ? LANGUAGE_VIETNAMESE : LANGUAGE_ENGLISH;
-        String selectedTheme = themeLightCheckbox.isChecked() ? THEME_LIGHT : THEME_DARK;
-
-        // Save settings to SharedPreferences
+        // SharedPreferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        editor.putString(PREF_LANGUAGE, selectedLanguage);
-        editor.putString(PREF_THEME, selectedTheme);
-        editor.apply();
 
-        // Apply new settings
-        updateLocale(selectedLanguage);
-        applyTheme(selectedTheme);
+        // Load saved preferences
+        loadPreferences();
 
-        // Refresh UI
-        recreate();
+        // Theme checkboxes listeners
+        themeLightCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isUpdatingThemeCheckboxes) return;
+            if (isChecked) {
+                isUpdatingThemeCheckboxes = true;
+                themeDarkCheckbox.setChecked(false);
+                setTheme(THEME_LIGHT);
+                isUpdatingThemeCheckboxes = false;
+            }
+        });
 
-        Toast.makeText(this, "Cài đặt đã được lưu", Toast.LENGTH_SHORT).show();
+        themeDarkCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isUpdatingThemeCheckboxes) return;
+            if (isChecked) {
+                isUpdatingThemeCheckboxes = true;
+                themeLightCheckbox.setChecked(false);
+                setTheme(THEME_DARK);
+                isUpdatingThemeCheckboxes = false;
+            }
+        });
+
+        // Back button
+        backButton.setOnClickListener(v -> startActivity(new Intent(SettingsActivity.this, HomeScreenActivity.class)));
+
+        // Save button
+        saveButton.setOnClickListener(v -> savePreferences());
     }
 
-    private void updateLocale(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
-
-        Resources resources = getResources();
-        Configuration config = resources.getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            config.setLocale(locale);
+    private void loadPreferences() {
+        String theme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
+        isUpdatingThemeCheckboxes = true;
+        if (THEME_LIGHT.equals(theme)) {
+            themeLightCheckbox.setChecked(true);
+            themeDarkCheckbox.setChecked(false);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         } else {
-            config.locale = locale;
+            themeLightCheckbox.setChecked(false);
+            themeDarkCheckbox.setChecked(true);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
-        resources.updateConfiguration(config, resources.getDisplayMetrics());
+        isUpdatingThemeCheckboxes = false;
     }
 
-    private void applyTheme(String theme) {
-        if (theme.equals(THEME_DARK)) {
-            setTheme(R.style.Theme_QuickChat_Dark); // Tên theme bạn đặt trong styles.xml
-        } else {
-            setTheme(R.style.Theme_QuickChat_Light);
+    private void setTheme(String theme) {
+        String currentTheme = sharedPreferences.getString(PREF_THEME, THEME_LIGHT);
+        if (!theme.equals(currentTheme)) {
+            editor.putString(PREF_THEME, theme).apply();
+            if (THEME_LIGHT.equals(theme)) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
         }
+    }
+
+    private void savePreferences() {
+        Toast.makeText(this, "Preferences saved", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

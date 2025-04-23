@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    style="@style/ScreenBackground"
     tools:context=".SettingsActivity">
 
     <LinearLayout
@@ -30,7 +30,7 @@
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="32dp"
-            android:textColor="@color/black" />
+            style="@style/TextColor" />
 
         <!-- Ngôn ngữ -->
         <TextView
@@ -40,7 +40,7 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="16dp"
-            android:textColor="@color/black"
+            style="@style/TextColor"
             android:layout_gravity="center_horizontal" />
 
         <!-- Tiếng Việt -->
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/rounded_rectangle_grey"
+            style="@style/CardBackgrond"
             android:padding="8dp"
             android:layout_marginBottom="8dp"
             android:clickable="true"
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:text="Tiếng Việt"
                 android:textSize="16sp"
-                android:textColor="@color/black" />
+                style="@style/TextColor" />
         </LinearLayout>
 
         <!-- Tiếng Anh -->
@@ -84,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/rounded_rectangle_grey"
+            style="@style/CardBackgrond"
             android:padding="8dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:text="Tiếng Anh"
                 android:textSize="16sp"
-                android:textColor="@color/black" />
+                style="@style/TextColor" />
         </LinearLayout>
 
         <!-- Giao diện -->
@@ -121,7 +121,7 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:layout_marginBottom="16dp"
-            android:textColor="@color/black"
+            style="@style/TextColor"
             android:layout_gravity="center_horizontal" />
 
         <!-- Light Mode -->
@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/rounded_rectangle_grey"
+            style="@style/CardBackgrond"
             android:padding="8dp"
             android:layout_marginBottom="8dp"
             android:clickable="true"
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:text="Light Mode"
                 android:textSize="16sp"
-                android:textColor="@color/black"
+                style="@style/TextColor"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
@@ -159,7 +159,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/rounded_rectangle_grey"
+            style="@style/CardBackgrond"
             android:padding="8dp"
             android:clickable="true"
             android:focusable="true"
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:text="Dark Mode"
                 android:textSize="16sp"
-                android:textColor="@color/black"
+                style="@style/TextColor"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 

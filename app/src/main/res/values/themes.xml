@@ -1,18 +1,32 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Quickchat" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Base.Theme.Quickchat.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
 
-    <style name="Theme.Quickchat" parent="Base.Theme.Quickchat" />
-
-    <style name="Theme.Quickchat.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Base.Theme.Quickchat.Dark" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/dark_gray</item>
+        <item name="colorPrimaryVariant">@color/dark_gray</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
     </style>
 
-    <style name="Theme.Quickchat.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.Quickchat.Light" parent="Base.Theme.Quickchat.Light" />
+    <style name="Theme.Quickchat.Dark" parent="Base.Theme.Quickchat.Dark" />
 
-    <style name="Theme.Quickchat.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="ScreenBackground.Light"><item name="android:background">@color/background_light</item></style>
+    <style name="ScreenBackground.Dark"><item name="android:background">@color/background_dark</item></style>
+    <style name="CardBackgrond.Light"><item name="android:background">@color/light_gray</item></style>
+    <style name="CardBackgrond.Dark"><item name="android:background">@color/dark_gray</item></style>
+    <style name="TextColor.Light"><item name="android:textColor">@color/text_primary_light</item></style>
+    <style name="TextColor.Dark"><item name="android:textColor">@color/text_primary_dark</item></style>
 </resources>

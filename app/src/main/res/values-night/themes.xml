@@ -3,5 +3,13 @@
     <style name="Base.Theme.Quickchat" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/dark_gray</item>
+        <item name="colorPrimaryVariant">@color/dark_gray</item>
+        <item name="colorOnPrimary">@color/black</item>
+
     </style>
+
+    <style name="ScreenBackground"><item name="android:background">@color/black</item></style>
+    <style name="CardBackgrond"><item name="android:background">@color/dark_gray</item></style>
+    <style name="TextColor"><item name="android:textColor">@color/white</item></style>
 </resources>
