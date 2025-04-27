@@ -7,6 +7,7 @@
     <color name="light_gray">#E9E9E9</color>
     <color name="purple">#9900ff</color>
     <color name="light_purple">#e1b5ff</color>
+    <color name="light_gray2">#A2A2A2</color>
 
     <!-- Base colors -->
     <color name="colorPrimary">#6200EE</color>
@@ -22,4 +23,6 @@
     <color name="background_dark">#121212</color>
     <color name="text_primary_dark">#FFFFFF</color>
     <color name="text_secondary_dark">#E0E0E0</color>
+
+    <color name="forward_button_color">#FF9800</color>
 </resources>

@@ -1,5 +1,4 @@
 package com.example.quickchat;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class HomeScreenActivity extends AppCompatActivity {
-
     private ListView recyclerRecentChats;
     private RecentChatAdapter recentChatAdapter;
     private List<RecentChat> recentChats;

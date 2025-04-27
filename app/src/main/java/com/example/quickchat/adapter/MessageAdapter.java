@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import com.example.quickchat.R;
 import com.example.quickchat.model.Message;
@@ -16,11 +17,13 @@ public class MessageAdapter extends BaseAdapter {
     private Context context;
     private List<Message> messages;
     private String currentUserId;
+    private OnForwardClickListener forwardClickListener;
 
-    public MessageAdapter(Context context, List<Message> messages) {
+    public MessageAdapter(Context context, List<Message> messages, OnForwardClickListener forwardClickListener) {
         this.context = context;
         this.messages = messages;
         this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        this.forwardClickListener = forwardClickListener;
     }
 
     @Override
@@ -46,6 +49,10 @@ public class MessageAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_chat_message, parent, false);
             TextView sentMessageText = convertView.findViewById(R.id.sent_message_text);
             TextView sentMessageTime = convertView.findViewById(R.id.sent_message_time);
+            Button forwardButton = convertView.findViewById(R.id.forward_button);
+            forwardButton.setVisibility(View.VISIBLE);
+            forwardButton.setOnClickListener(v -> forwardClickListener.onForwardClick(message));
+
             sentMessageText.setText(message.getContent());
             sentMessageTime.setText(DateUtils.formatDateTime(context, message.getTimestamp(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE));
             // Hiển thị tin nhắn gửi và ẩn tin nhắn nhận
@@ -63,5 +70,9 @@ public class MessageAdapter extends BaseAdapter {
             convertView.findViewById(R.id.received_message_container).setVisibility(View.VISIBLE);
         }
         return convertView;
+    }
+
+    public interface OnForwardClickListener {
+        void onForwardClick(Message message);
     }
 }
