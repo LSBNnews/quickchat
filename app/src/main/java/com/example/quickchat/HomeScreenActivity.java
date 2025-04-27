@@ -1,22 +1,29 @@
 package com.example.quickchat;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import com.bumptech.glide.Glide;
 import com.example.quickchat.adapter.RecentChatAdapter;
+import com.example.quickchat.model.Message;
 import com.example.quickchat.model.RecentChat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,32 +44,28 @@ public class HomeScreenActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private Button hs_setting, hs_profile, hs_signout, hs_search, hs_block_user;
     private ProgressDialog progressDialog;
+    private NotificationManager notificationManager; // Thêm NotificationManager
+    private boolean isForeground = false; // Theo dõi trạng thái foreground
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         initializeFields();
-        // Thiết lập thông tin người dùng
         displayUserInfo();
-        // Thiết lập danh sách cuộc trò chuyện gần đây
         setupRecentChats();
-        // Xử lý nút "Tìm kiếm"
+        setupMessageListener(); // Thêm listener cho tin nhắn mới
+
         hs_search.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SearchActivity.class)));
-        // Xử lý nút "Đăng xuất"
         hs_signout.setOnClickListener(v -> signout());
-        // Chuyển đến trang chỉnh sửa profile
         hs_profile.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, EditProfileActivity.class)));
-        // Chuyển đến trang cài đặt
         hs_setting.setOnClickListener(v -> startActivity(new Intent(HomeScreenActivity.this, SettingsActivity.class)));
-        // Xử lý sự kiện click vào item trong danh sách cuộc trò chuyện gần đây
+
         recyclerRecentChats.setOnItemClickListener((parent, view, position, id) -> {
             RecentChat recentChat = recentChats.get(position);
             String chatId = recentChat.getChatId();
-            // Lấy thông tin người dùng khác từ danh sách participants
             String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             String otherUserId = recentChat.getParticipants().get(0).equals(currentUserId) ? recentChat.getParticipants().get(1) : recentChat.getParticipants().get(0);
-            // Kiểm tra xem người dùng khác có bị chặn hay không
             DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
                     .child("blockedUsers")
                     .child(currentUserId)
@@ -74,7 +77,6 @@ public class HomeScreenActivity extends AppCompatActivity {
                     if (isBlocked) {
                         Toast.makeText(HomeScreenActivity.this, "Bạn đã chặn người dùng này", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Lấy tên người dùng khác từ Firebase
                         DatabaseReference userRef = reference.child(otherUserId);
                         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -100,9 +102,8 @@ public class HomeScreenActivity extends AppCompatActivity {
                 }
             });
         });
-        // Xử lý nút chặn người dùng
+
         hs_block_user.setOnClickListener(v -> {
-            // Lấy ID của người dùng cần chặn (ví dụ: từ intent hoặc context)
             String targetUserId = getIntent().getStringExtra("targetUserId");
             if (targetUserId != null) {
                 blockUser(targetUserId);
@@ -125,11 +126,23 @@ public class HomeScreenActivity extends AppCompatActivity {
         hs_signout = findViewById(R.id.hs_signout);
         hs_search = findViewById(R.id.hs_search);
         hs_block_user = findViewById(R.id.hs_block_user);
-        // Khởi tạo ProgressDialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Đang tải thông tin...");
         progressDialog.setCancelable(false);
-        progressDialog.show(); // Hiển thị ProgressDialog ngay khi bắt đầu
+        progressDialog.show();
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); // Khởi tạo NotificationManager
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isForeground = true; // Cập nhật trạng thái foreground
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isForeground = false; // Cập nhật trạng thái khi không ở foreground
     }
 
     private void displayUserInfo() {
@@ -156,13 +169,13 @@ public class HomeScreenActivity extends AppCompatActivity {
                     startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
                     finish();
                 }
-                progressDialog.dismiss(); // Ẩn ProgressDialog sau khi tải xong thông tin người dùng
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("HomeScreenActivity", "Lỗi khi đọc dữ liệu người dùng: " + error.getMessage());
-                progressDialog.dismiss(); // Ẩn ProgressDialog nếu có lỗi
+                progressDialog.dismiss();
             }
         });
     }
@@ -182,18 +195,16 @@ public class HomeScreenActivity extends AppCompatActivity {
                     long timestamp = chatSnapshot.child("timestamp").getValue(Long.class);
                     GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
                     List<String> participants = chatSnapshot.child("participants").getValue(t);
-                    String lastSenderId = chatSnapshot.child("lastSenderId").getValue(String.class); // Đọc lastSenderId
+                    String lastSenderId = chatSnapshot.child("lastSenderId").getValue(String.class);
                     RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants, lastSenderId);
                     recentChats.add(recentChat);
                 }
-                // Sắp xếp danh sách theo thời gian mới nhất
                 Collections.sort(recentChats, new Comparator<RecentChat>() {
                     @Override
                     public int compare(RecentChat c1, RecentChat c2) {
                         return Long.compare(c2.getTimestamp(), c1.getTimestamp());
                     }
                 });
-                // Cập nhật ListView
                 recentChatAdapter.notifyDataSetChanged();
             }
 
@@ -202,6 +213,102 @@ public class HomeScreenActivity extends AppCompatActivity {
                 Log.e("HomeScreenActivity", "Lỗi khi lấy danh sách cuộc trò chuyện gần đây: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void setupMessageListener() {
+        String currentUserId = auth.getCurrentUser().getUid();
+        DatabaseReference recentChatsRef = FirebaseDatabase.getInstance().getReference()
+                .child("recentChats")
+                .child(currentUserId);
+
+        recentChatsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                String chatId = dataSnapshot.getKey();
+                String lastMessage = dataSnapshot.child("lastMessage").getValue(String.class);
+                String lastSenderId = dataSnapshot.child("lastSenderId").getValue(String.class);
+                GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                List<String> participants = dataSnapshot.child("participants").getValue(t);
+
+                // Tìm targetUserId (người gửi tin nhắn)
+                String targetUserId = participants.get(0).equals(currentUserId) ? participants.get(1) : participants.get(0);
+
+                // Chỉ hiển thị thông báo nếu tin nhắn từ người khác và activity ở foreground
+                if (!lastSenderId.equals(currentUserId) && isForeground) {
+                    // Lấy tên người gửi để hiển thị trong thông báo
+                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                            .child("users")
+                            .child(targetUserId);
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            String targetUsername = userSnapshot.child("username").getValue(String.class);
+                            showNotification(targetUsername, lastMessage);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e("HomeScreenActivity", "Lỗi khi lấy thông tin người dùng: " + databaseError.getMessage());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                // Xử lý khi cuộc trò chuyện được cập nhật
+                String chatId = dataSnapshot.getKey();
+                String lastMessage = dataSnapshot.child("lastMessage").getValue(String.class);
+                String lastSenderId = dataSnapshot.child("lastSenderId").getValue(String.class);
+                GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                List<String> participants = dataSnapshot.child("participants").getValue(t);
+
+                String targetUserId = participants.get(0).equals(currentUserId) ? participants.get(1) : participants.get(0);
+
+                if (!lastSenderId.equals(currentUserId) && isForeground) {
+                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                            .child("users")
+                            .child(targetUserId);
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            String targetUsername = userSnapshot.child("username").getValue(String.class);
+                            showNotification(targetUsername, lastMessage);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e("HomeScreenActivity", "Lỗi khi lấy thông tin người dùng: " + databaseError.getMessage());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {}
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("HomeScreenActivity", "Lỗi khi lắng nghe tin nhắn mới: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void showNotification(String targetUsername, String messageContent) {
+        String channelId = "quickchat_channel";
+        String channelName = "Quick Chat Notifications";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Tin nhắn mới từ " + targetUsername)
+                .setContentText(messageContent)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
     private void signout() {
@@ -213,7 +320,6 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private void blockUser(String targetUserId) {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        // Xóa cuộc trò chuyện gần đây của người dùng hiện tại
         DatabaseReference recentChatsRef = FirebaseDatabase.getInstance().getReference()
                 .child("recentChats")
                 .child(currentUserId);
@@ -223,10 +329,9 @@ public class HomeScreenActivity extends AppCompatActivity {
                 for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
                     List<String> participants = chatSnapshot.child("participants").getValue(new GenericTypeIndicator<List<String>>() {});
                     if (participants != null && participants.contains(targetUserId)) {
-                        chatSnapshot.getRef().removeValue(); // Xóa cuộc trò chuyện
+                        chatSnapshot.getRef().removeValue();
                     }
                 }
-                // Cập nhật danh sách recentChats trên giao diện
                 setupRecentChats();
             }
 
@@ -235,7 +340,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 Log.e("HomeScreenActivity", "Lỗi khi xóa cuộc trò chuyện: " + databaseError.getMessage());
             }
         });
-        // Xóa cuộc trò chuyện gần đây của người bị chặn (tùy chọn)
+
         DatabaseReference targetRecentChatsRef = FirebaseDatabase.getInstance().getReference()
                 .child("recentChats")
                 .child(targetUserId);
@@ -245,7 +350,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
                     List<String> participants = chatSnapshot.child("participants").getValue(new GenericTypeIndicator<List<String>>() {});
                     if (participants != null && participants.contains(currentUserId)) {
-                        chatSnapshot.getRef().removeValue(); // Xóa cuộc trò chuyện
+                        chatSnapshot.getRef().removeValue();
                     }
                 }
             }
@@ -255,7 +360,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 Log.e("HomeScreenActivity", "Lỗi khi xóa cuộc trò chuyện: " + databaseError.getMessage());
             }
         });
-        // Cập nhật trạng thái chặn trong Firebase
+
         DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
                 .child("blockedUsers")
                 .child(currentUserId)

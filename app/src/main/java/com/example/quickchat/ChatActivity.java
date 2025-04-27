@@ -177,15 +177,11 @@ public class ChatActivity extends AppCompatActivity {
                     messageAdapter.notifyDataSetChanged();
                     chatList.setSelection(messages.size() - 1);
 
-                    // Update recent chats and show notification for new messages from others
+                    // Update recent chats
                     long timestamp = message.getTimestamp();
                     String lastSenderId = message.getSenderId();
                     updateRecentChats(chatId, message.getContent(), timestamp, lastSenderId, targetUserId);
-
-                    // Show notification only for messages from others
-                    if (!lastSenderId.equals(auth.getCurrentUser().getUid())) {
-                        showNotification(message.getContent());
-                    }
+                    // Removed showNotification call to prevent notifications in ChatActivity
                 }
             }
 
