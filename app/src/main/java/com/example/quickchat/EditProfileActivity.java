@@ -107,7 +107,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 return;
             }
 
-            if(usernameInput.length() > 10) {
+            if(usernameInput.length() > 20) {
                 editProfile_username.setError("Tên người dùng không vượt quá 10 kí tự");
                 editProfile_username.requestFocus();
                 return;
@@ -135,7 +135,7 @@ public class EditProfileActivity extends AppCompatActivity {
             });
         }
         else {
-            if(descriptionInput.length() > 20) {
+            if(descriptionInput.length() > 30) {
                 editProfile_description.setError("Mô tả bản thân không vượt quá 20 kí tự");
                 editProfile_description.requestFocus();
             }

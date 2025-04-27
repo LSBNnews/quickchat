@@ -39,6 +39,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +47,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -144,7 +147,9 @@ public class ChatActivity extends AppCompatActivity {
     // Cập nhật danh sách tin nhắn
     private void setupMessageList() {
         DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
-        chatRef.addValueEventListener(new ValueEventListener() {
+
+        // Load initial messages with ValueEventListener
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messages.clear();
@@ -154,24 +159,54 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 messageAdapter.notifyDataSetChanged();
                 chatList.setSelection(messages.size() - 1);
-                if (!messages.isEmpty()) {
-                    Message lastMessage = messages.get(messages.size() - 1);
-                    // Use current time as a fallback or get timestamp from message
-                    long timestamp = lastMessage.getTimestamp(); // Assuming Message has a getTimestamp() method
-                    String lastSenderId = lastMessage.getSenderId();
-                    updateRecentChats(chatId, lastMessage.getContent(), timestamp, lastSenderId, targetUserId);
-
-
-                    // Hiển thị thông báo nếu tin nhắn mới từ người khác
-                    if (!lastMessage.getSenderId().equals(auth.getCurrentUser().getUid())) {
-                        showNotification(lastMessage.getContent());
-                    }
-                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("ChatActivity", "Lỗi khi lấy danh sách tin nhắn: " + databaseError.getMessage());
+            }
+        });
+
+        // Listen for new messages with ChildEventListener
+        chatRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                Message message = dataSnapshot.getValue(Message.class);
+                if (message != null) {
+                    messages.add(message);
+                    messageAdapter.notifyDataSetChanged();
+                    chatList.setSelection(messages.size() - 1);
+
+                    // Update recent chats and show notification for new messages from others
+                    long timestamp = message.getTimestamp();
+                    String lastSenderId = message.getSenderId();
+                    updateRecentChats(chatId, message.getContent(), timestamp, lastSenderId, targetUserId);
+
+                    // Show notification only for messages from others
+                    if (!lastSenderId.equals(auth.getCurrentUser().getUid())) {
+                        showNotification(message.getContent());
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                // Handle message updates if needed
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                // Handle message deletion if needed
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                // Handle message reordering if needed
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ChatActivity", "Lỗi khi lắng nghe tin nhắn mới: " + databaseError.getMessage());
             }
         });
     }
