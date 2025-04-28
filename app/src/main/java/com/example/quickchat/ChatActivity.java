@@ -9,12 +9,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,15 +44,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
@@ -73,10 +72,11 @@ public class ChatActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private NotificationManager notificationManager; // Thêm biến quản lý thông báo
+    private NotificationManager notificationManager;
     private List<RecentChat> recentChats;
     private List<String> recentChatUserIds;
     private List<String> recentChatUserNames;
+    private Set<String> recentlyForwardedMessages; // Track forwarded messages to prevent duplicates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +90,10 @@ public class ChatActivity extends AppCompatActivity {
         setupBlockButton();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         setupLocationCallback();
-        // Khởi tạo NotificationManager
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // Thiết lập danh sách cuộc trò chuyện gần đây
         setupRecentChats();
     }
 
-    // Khởi tạo các biến
     private void initializeFields() {
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
@@ -117,9 +114,9 @@ public class ChatActivity extends AppCompatActivity {
         recentChats = new ArrayList<>();
         recentChatUserIds = new ArrayList<>();
         recentChatUserNames = new ArrayList<>();
+        recentlyForwardedMessages = new HashSet<>(); // Initialize the set for tracking forwarded messages
     }
 
-    // Thiết lập toolbar
     private void setupToolbar() {
         setSupportActionBar(chatToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -144,11 +141,9 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    // Cập nhật danh sách tin nhắn
     private void setupMessageList() {
         DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
 
-        // Load initial messages with ValueEventListener
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -167,7 +162,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        // Listen for new messages with ChildEventListener
         chatRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
@@ -176,28 +170,22 @@ public class ChatActivity extends AppCompatActivity {
                     messages.add(message);
                     messageAdapter.notifyDataSetChanged();
                     chatList.setSelection(messages.size() - 1);
-
-                    // Update recent chats
                     long timestamp = message.getTimestamp();
                     String lastSenderId = message.getSenderId();
                     updateRecentChats(chatId, message.getContent(), timestamp, lastSenderId, targetUserId);
-                    // Removed showNotification call to prevent notifications in ChatActivity
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-                // Handle message updates if needed
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                // Handle message deletion if needed
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-                // Handle message reordering if needed
             }
 
             @Override
@@ -207,7 +195,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    // Hiển thị thông báo
     private void showNotification(String messageContent) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "quickchat_channel";
@@ -217,14 +204,13 @@ public class ChatActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // Đảm bảo có icon này
-                .setContentTitle("Tin nhắn mới từ " + targetUsername) // Hiển thị tên người dùng
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Tin nhắn mới từ " + targetUsername)
                 .setContentText(messageContent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
-    // Thiết lập nút gửi tin nhắn
     private void setupSendMessageButton() {
         chatSendButton.setOnClickListener(v -> sendMessage());
         chatInput.addTextChangedListener(new TextWatcher() {
@@ -243,7 +229,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    // Thiết lập nút gửi vị trí
     private void setupMapButton() {
         chatMapButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -254,7 +239,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    // Thiết lập callback vị trí
     private void setupLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -269,7 +253,6 @@ public class ChatActivity extends AppCompatActivity {
         };
     }
 
-    // Yêu cầu vị trí hiện tại
     private void requestCurrentLocation() {
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -279,7 +262,7 @@ public class ChatActivity extends AppCompatActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, android.os.Looper.getMainLooper());
     }
 
     private void sendMessage() {
@@ -296,7 +279,6 @@ public class ChatActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     chatInput.setText("");
                     updateRecentChats(chatId, messageContent, currentTime, currentUserId, targetUserId);
-                    // Truyền currentTime thay vì ServerValue.TIMESTAMP
                 } else {
                     Toast.makeText(ChatActivity.this, "Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
                 }
@@ -306,7 +288,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendLocationMessage(double latitude, double longitude) {
         String mapUrl = "https://maps.google.com/?q=" + latitude + "," + longitude;
-        String messageContent = "Vị trí của tôi: " + mapUrl + "";
+        String messageContent = "Vị trí của tôi: " + mapUrl;
         String currentUserId = auth.getCurrentUser().getUid();
         DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
         String messageId = chatRef.push().getKey();
@@ -318,7 +300,6 @@ public class ChatActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 chatInput.setText("");
                 updateRecentChats(chatId, messageContent, currentTime, currentUserId, targetUserId);
-                // Truyền currentTime thay vì ServerValue.TIMESTAMP
             } else {
                 Toast.makeText(ChatActivity.this, "Lỗi khi gửi tin nhắn", Toast.LENGTH_SHORT).show();
             }
@@ -338,22 +319,15 @@ public class ChatActivity extends AppCompatActivity {
         participants.add(receiverUserId);
         recentChatData.put("participants", participants);
 
-        // Cập nhật cuộc trò chuyện gần đây cho người gửi
         recentChatsRef.updateChildren(recentChatData);
-
-        // Cập nhật cuộc trò chuyện gần đây cho người nhận
         DatabaseReference recipientRecentChatsRef = reference.child("recentChats").child(receiverUserId).child(chatId);
         recipientRecentChatsRef.updateChildren(recentChatData);
     }
 
-
-
-    // Tạo/đọc ID chat
     private String getOrCreateChatId(String userId1, String userId2) {
         return userId1.compareTo(userId2) < 0 ? userId1 + "_" + userId2 : userId2 + "_" + userId1;
     }
 
-    // Quay lại HomeScreen
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -368,7 +342,6 @@ public class ChatActivity extends AppCompatActivity {
         finish();
     }
 
-    // Xử lý quyền truy cập vị trí
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -381,16 +354,13 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    // Thiết lập nút chặn
     private void setupBlockButton() {
         chatBlockButton.setOnClickListener(v -> blockUserFromChat());
     }
 
-    // Chặn người dùng
     private void blockUserFromChat() {
         String targetUserId = getIntent().getStringExtra("targetUserId");
         if (targetUserId != null) {
-            // Xóa cuộc trò chuyện gần đây của người dùng hiện tại
             DatabaseReference recentChatsRef = FirebaseDatabase.getInstance().getReference()
                     .child("recentChats")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -412,7 +382,6 @@ public class ChatActivity extends AppCompatActivity {
                     Log.e("ChatActivity", "Lỗi khi xóa cuộc trò chuyện: " + databaseError.getMessage());
                 }
             });
-            // Cập nhật trạng thái chặn
             DatabaseReference blockedUsersRef = FirebaseDatabase.getInstance().getReference()
                     .child("blockedUsers")
                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -436,6 +405,11 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void forwardMessage(Message message) {
+        if (recentChatUserNames.isEmpty()) {
+            Toast.makeText(this, "Đang tải danh sách người dùng, vui lòng thử lại sau", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Chọn người chuyển tiếp tin nhắn");
 
@@ -464,17 +438,22 @@ public class ChatActivity extends AppCompatActivity {
     private void sendForwardedMessage(String targetUserId, String targetUsername, String messageContent) {
         String currentUserId = auth.getCurrentUser().getUid();
         String chatId = getOrCreateChatId(currentUserId, targetUserId);
+        String forwardKey = chatId + "_" + messageContent;
 
-        // Kiểm tra xem đoạn chat đã tồn tại hay chưa
+        if (recentlyForwardedMessages.contains(forwardKey)) {
+            Toast.makeText(this, "Tin nhắn này đã được chuyển tiếp đến người dùng này", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        recentlyForwardedMessages.add(forwardKey);
+
         DatabaseReference chatRef = reference.child("chats").child(chatId).child("messages");
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    // Đoạn chat chưa tồn tại, tạo mới
                     createNewChatAndSendMessage(targetUserId, targetUsername, messageContent, chatId);
                 } else {
-                    // Đoạn chat đã tồn tại, chỉ gửi tin nhắn
                     sendMessageToExistingChat(targetUserId, targetUsername, messageContent, chatId);
                 }
             }
@@ -484,6 +463,8 @@ public class ChatActivity extends AppCompatActivity {
                 Log.e("ChatActivity", "Lỗi khi kiểm tra đoạn chat: " + databaseError.getMessage());
             }
         });
+
+        new Handler().postDelayed(() -> recentlyForwardedMessages.remove(forwardKey), 5000);
     }
 
     private void createNewChatAndSendMessage(String targetUserId, String targetUsername, String messageContent, String chatId) {
@@ -531,24 +512,40 @@ public class ChatActivity extends AppCompatActivity {
                 recentChats.clear();
                 recentChatUserIds.clear();
                 recentChatUserNames.clear();
+
+                Set<String> userIdSet = new HashSet<>();
+                List<String> tempUserIds = new ArrayList<>();
+                List<String> tempUserNames = new ArrayList<>();
+
                 for (DataSnapshot chatSnapshot : dataSnapshot.getChildren()) {
                     String chatId = chatSnapshot.getKey();
                     String lastMessage = chatSnapshot.child("lastMessage").getValue(String.class);
                     long timestamp = chatSnapshot.child("timestamp").getValue(Long.class);
                     GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
                     List<String> participants = chatSnapshot.child("participants").getValue(t);
-                    String lastSenderId = chatSnapshot.child("lastSenderId").getValue(String.class); // Đọc lastSenderId
+                    String lastSenderId = chatSnapshot.child("lastSenderId").getValue(String.class);
                     RecentChat recentChat = new RecentChat(chatId, lastMessage, timestamp, participants, lastSenderId);
                     recentChats.add(recentChat);
+
                     for (String participant : participants) {
-                        if (!participant.equals(currentUserId)) {
-                            recentChatUserIds.add(participant);
+                        if (!participant.equals(currentUserId) && !userIdSet.contains(participant)) {
+                            userIdSet.add(participant);
+                            tempUserIds.add(participant);
+
                             DatabaseReference userRef = reference.child("users").child(participant);
                             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     String username = dataSnapshot.child("username").getValue(String.class);
-                                    recentChatUserNames.add(username);
+                                    if (username != null && !tempUserNames.contains(username)) {
+                                        tempUserNames.add(username);
+                                    }
+                                    if (tempUserNames.size() == userIdSet.size()) {
+                                        recentChatUserIds.clear();
+                                        recentChatUserNames.clear();
+                                        recentChatUserIds.addAll(tempUserIds);
+                                        recentChatUserNames.addAll(tempUserNames);
+                                    }
                                 }
 
                                 @Override
@@ -559,7 +556,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 }
-                // Sắp xếp danh sách theo thời gian mới nhất
+
                 Collections.sort(recentChats, (c1, c2) -> Long.compare(c2.getTimestamp(), c1.getTimestamp()));
             }
 
